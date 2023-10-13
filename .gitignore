@@ -1,0 +1,61 @@
+# Pliki i katalogi systemowe
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+$py.class
+
+# Katalogi środowiska wirtualnego (np. virtualenv lub venv)
+venv/
+.env
+
+# Katalogi generowane przez Django
+/migrations/
+/staticfiles/
+*.db
+*.sqlite3
+*.log
+
+# Katalog generowany przez npm/yarn dla projektu Vue.js
+/node_modules/
+
+# Pliki z konfiguracją lokalną, np. ustawienia bazy danych
+.env
+
+# Katalogi środowiska deweloperskiego (np. PyCharm)
+.idea/
+
+# Pliki konfiguracyjne
+*.yml
+*.json
+
+# Inne pliki tymczasowe
+*.swp
+*.swo
+*.swn
+
+# Dla systemu macOS (pomiń, jeśli nie używasz macOS)
+.DS_Store
+
+# Katalogi i pliki generowane przez narzędzia deweloperskie
+node_modules/
+/dist
+
+# Pliki konfiguracji środowiska lokalnego
+.env.local
+.env.*.local
+
+# Pliki dzienników
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Katalogi i pliki związane z edytorami
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
