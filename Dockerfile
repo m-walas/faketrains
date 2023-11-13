@@ -1,5 +1,5 @@
 # Wybierz obraz bazowy zgodny z Twoim projektem Django (np. Python)
-FROM python:3.8
+FROM python:3.9
 LABEL authors="Mateusz"
 
 # Ustal katalog roboczy w kontenerze

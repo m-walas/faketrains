@@ -14,4 +14,4 @@ COPY frontend/ /app/
 RUN npm install
 
 # Uruchom serwer deweloperski Vue na porcie 8080
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]
