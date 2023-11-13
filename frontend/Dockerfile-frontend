@@ -1,0 +1,17 @@
+FROM ubuntu:latest
+LABEL authors="Mateusz"
+
+# Wybierz obraz bazowy z Node.js
+FROM node:14
+
+# Ustal katalog roboczy w kontenerze
+WORKDIR /app
+
+# Skopiuj kod źródłowy frontendu Vue do kontenera
+COPY frontend/ /app/
+
+# Zainstaluj zależności frontendu Vue
+RUN npm install
+
+# Uruchom serwer deweloperski Vue na porcie 8080
+CMD ["npm", "run", "serve"]
