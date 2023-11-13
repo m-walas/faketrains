@@ -332,6 +332,9 @@ if __name__ == '__main__':
         models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP002"),
                                               departure_city="Warszawa", departure_time="12:00:00",
                                               arrival_city="Kraków", arrival_time="15:00:00")
+        models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP003"),
+                                              departure_city="Kraków", departure_time="16:00:00",
+                                              arrival_city="Wrocław", arrival_time="17:40:00")
         # TODO TODO TODO TODO TODO TODO
 
         # create passengers: (only one in case if no one is logged in)
