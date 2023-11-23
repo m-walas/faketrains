@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
-
 
 def main():
     """Run administrative tasks."""
@@ -78,80 +75,80 @@ if __name__ == '__main__':
         # travel_time is in format 03:00:00 and different for each train
         # train_type: express, regular (exp, reg)
         models.Train.objects.get_or_create(train_id="FT-EXP001", travel_time="03:00:00",
-                                           train_type="exp")  # kraków-warszawa
+                                            train_type="exp")  # kraków-warszawa
         models.Train.objects.get_or_create(train_id="FT-EXP002", travel_time="03:00:00",
-                                           train_type="exp")  # kraków-warszawa
+                                            train_type="exp")  # kraków-warszawa
         models.Train.objects.get_or_create(train_id="FT-EXP003", travel_time="01:40:00",
-                                           train_type="exp")  # kraków-wrocław
+                                            train_type="exp")  # kraków-wrocław
         models.Train.objects.get_or_create(train_id="FT-EXP004", travel_time="03:30:00",
-                                           train_type="exp")  # warszawa-gdańsk
+                                            train_type="exp")  # warszawa-gdańsk
         models.Train.objects.get_or_create(train_id="FT-EXP005", travel_time="03:30:00",
-                                           train_type="exp")  # warszawa-gdańsk
+                                            train_type="exp")  # warszawa-gdańsk
         models.Train.objects.get_or_create(train_id="FT-EXP006", travel_time="03:30:00",
-                                           train_type="exp")  # warszawa-wrocław
+                                            train_type="exp")  # warszawa-wrocław
         models.Train.objects.get_or_create(train_id="FT-EXP007", travel_time="03:30:00",
-                                           train_type="exp")  # warszawa-wrocław
+                                            train_type="exp")  # warszawa-wrocław
         models.Train.objects.get_or_create(train_id="FT-EXP008", travel_time="01:40:00",
-                                           train_type="exp")  # warszawa-poznań
+                                            train_type="exp")  # warszawa-poznań
         models.Train.objects.get_or_create(train_id="FT-EXP009", travel_time="04:00:00",
-                                           train_type="exp")  # wrocław-szczecin
+                                            train_type="exp")  # wrocław-szczecin
         models.Train.objects.get_or_create(train_id="FT-EXP010", travel_time="04:00:00",
-                                           train_type="exp")  # wrocław-szczecin
+                                            train_type="exp")  # wrocław-szczecin
 
         models.Train.objects.get_or_create(train_id="FT-REG001", travel_time="04:30:00",
-                                           train_type="reg")  # kraków-warszawa
+                                            train_type="reg")  # kraków-warszawa
         models.Train.objects.get_or_create(train_id="FT-REG002", travel_time="04:30:00",
-                                           train_type="reg")  # kraków-warszawa
+                                            train_type="reg")  # kraków-warszawa
         models.Train.objects.get_or_create(train_id="FT-REG003", travel_time="08:00:00",
-                                           train_type="reg")  # kraków-gdańsk
+                                            train_type="reg")  # kraków-gdańsk
         models.Train.objects.get_or_create(train_id="FT-REG004", travel_time="08:00:00",
-                                           train_type="reg")  # kraków-gdańsk
+                                            train_type="reg")  # kraków-gdańsk
         models.Train.objects.get_or_create(train_id="FT-REG005", travel_time="03:00:00",
-                                           train_type="reg")  # kraków-wrocław
+                                            train_type="reg")  # kraków-wrocław
         models.Train.objects.get_or_create(train_id="FT-REG006", travel_time="05:00:00",
-                                           train_type="reg")  # kraków-poznań
+                                            train_type="reg")  # kraków-poznań
         models.Train.objects.get_or_create(train_id="FT-REG007", travel_time="05:00:00",
-                                           train_type="reg")  # kraków-poznań
+                                            train_type="reg")  # kraków-poznań
         models.Train.objects.get_or_create(train_id="FT-REG008", travel_time="09:30:00",
-                                           train_type="reg")  # kraków-szczecin
+                                            train_type="reg")  # kraków-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG009", travel_time="09:30:00",
-                                           train_type="reg")  # kraków-szczecin
+                                            train_type="reg")  # kraków-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG010", travel_time="04:15:00",
-                                           train_type="reg")  # warszawa-gdańsk
+                                            train_type="reg")  # warszawa-gdańsk
         models.Train.objects.get_or_create(train_id="FT-REG011", travel_time="04:15:00",
-                                           train_type="reg")  # warszawa-gdańsk
+                                            train_type="reg")  # warszawa-gdańsk
         models.Train.objects.get_or_create(train_id="FT-REG012", travel_time="05:00:00",
-                                           train_type="reg")  # warszawa-wrocław
+                                            train_type="reg")  # warszawa-wrocław
         models.Train.objects.get_or_create(train_id="FT-REG013", travel_time="05:00:00",
-                                           train_type="reg")  # warszawa-wrocław
+                                            train_type="reg")  # warszawa-wrocław
         models.Train.objects.get_or_create(train_id="FT-REG014", travel_time="02:30:00",
-                                           train_type="reg")  # warszawa-poznań
+                                            train_type="reg")  # warszawa-poznań
         models.Train.objects.get_or_create(train_id="FT-REG015", travel_time="06:00:00",
-                                           train_type="reg")  # warszawa-szczecin
+                                            train_type="reg")  # warszawa-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG016", travel_time="06:00:00",
-                                           train_type="reg")  # warszawa-szczecin
+                                            train_type="reg")  # warszawa-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG017", travel_time="06:00:00",
-                                           train_type="reg")  # gdańsk-wrocław
+                                            train_type="reg")  # gdańsk-wrocław
         models.Train.objects.get_or_create(train_id="FT-REG018", travel_time="06:00:00",
-                                           train_type="reg")  # gdańsk-wrocław
+                                            train_type="reg")  # gdańsk-wrocław
         models.Train.objects.get_or_create(train_id="FT-REG019", travel_time="05:00:00",
-                                           train_type="reg")  # gdańsk-poznań
+                                            train_type="reg")  # gdańsk-poznań
         models.Train.objects.get_or_create(train_id="FT-REG020", travel_time="05:00:00",
-                                           train_type="reg")  # gdańsk-poznań
+                                            train_type="reg")  # gdańsk-poznań
         models.Train.objects.get_or_create(train_id="FT-REG021", travel_time="05:30:00",
-                                           train_type="reg")  # gdańsk-szczecin
+                                            train_type="reg")  # gdańsk-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG022", travel_time="05:30:00",
-                                           train_type="reg")  # gdańsk-szczecin
+                                            train_type="reg")  # gdańsk-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG023", travel_time="01:40:00",
-                                           train_type="reg")  # wrocław-poznań
+                                            train_type="reg")  # wrocław-poznań
         models.Train.objects.get_or_create(train_id="FT-REG024", travel_time="06:00:00",
-                                           train_type="reg")  # wrocław-szczecin
+                                            train_type="reg")  # wrocław-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG025", travel_time="06:00:00",
-                                           train_type="reg")  # wrocław-szczecin
+                                            train_type="reg")  # wrocław-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG026", travel_time="03:00:00",
-                                           train_type="reg")  # poznań-szczecin
+                                            train_type="reg")  # poznań-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG027", travel_time="03:00:00",
-                                           train_type="reg")  # poznań-szczecin
+                                            train_type="reg")  # poznań-szczecin
 
         # create train routes for each train:
         # train_route: train, route (Kraków-Warszawa) - many to many
@@ -327,15 +324,14 @@ if __name__ == '__main__':
         # create schedules for each train:
         # schedule: train, departure_city, departure_time, arrival_city, arrival_time
         models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP001"),
-                                              departure_city="Kraków", departure_time="08:00:00",
-                                              arrival_city="Warszawa", arrival_time="11:00:00")
+                                                departure_city="Kraków", departure_time="08:00:00",
+                                                arrival_city="Warszawa", arrival_time="11:00:00")
         models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP002"),
-                                              departure_city="Warszawa", departure_time="12:00:00",
-                                              arrival_city="Kraków", arrival_time="15:00:00")
+                                                departure_city="Warszawa", departure_time="12:00:00",
+                                                arrival_city="Kraków", arrival_time="15:00:00")
         models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP003"),
-                                              departure_city="Kraków", departure_time="16:00:00",
-                                              arrival_city="Wrocław", arrival_time="17:40:00")
-        # TODO TODO TODO TODO TODO TODO
+                                                departure_city="Kraków", departure_time="16:00:00",
+                                                arrival_city="Wrocław", arrival_time="17:40:00")
 
         # create passengers: (only one in case if no one is logged in)
         # passenger: first_name, last_name
@@ -344,7 +340,6 @@ if __name__ == '__main__':
         # create seats for each train:
         # seat: train, number, class_type
         # in loop
-        # TODO
 
         # create tickets for each passenger:
         # no tickets are created at the beginning of the database creation

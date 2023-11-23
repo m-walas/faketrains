@@ -55,14 +55,14 @@ class Passenger(models.Model):
 
 
 class Seat(models.Model):
-    """
-    Model reprezentujący miejsce w pociągu.
+    # """
+    # Model reprezentujący miejsce w pociągu.
 
-    Pola:
-    - train: pociąg, do którego przypisane jest miejsce.
-    - number: numer miejsca (np. 23A).
-    - class_type: klasa miejsca (np. pierwsza klasa, druga klasa).
-    """
+    # Pola:
+    # - train: pociąg, do którego przypisane jest miejsce.
+    # - number: numer miejsca (np. 23A).
+    # - class_type: klasa miejsca (np. pierwsza klasa, druga klasa).
+    # """
     TRAIN_CLASS_CHOICES = (
         ('first_class', 'Pierwsza klasa'),
         ('second_class', 'Druga klasa'),
@@ -77,16 +77,16 @@ class Seat(models.Model):
 
 
 class Ticket(models.Model):
-    """
-    Model reprezentujący bilet pasażera na pociąg.
+    # """
+    # Model reprezentujący bilet pasażera na pociąg.
 
-    Pola:
-    - passenger: pasażer, do którego przypisany jest bilet.
-    - seat: miejsce, na które nabyto bilet.
-    - valid_date: data ważności biletu.
-    - price: cena biletu.
-    - status: status biletu (dostępny, zarezerwowany, potwierdzony).
-    """
+    # Pola:
+    # - passenger: pasażer, do którego przypisany jest bilet.
+    # - seat: miejsce, na które nabyto bilet.
+    # - valid_date: data ważności biletu.
+    # - price: cena biletu.
+    # - status: status biletu (dostępny, zarezerwowany, potwierdzony).
+    # """
     STATUS_CHOICES = (
         ('available', 'Dostępny'),
         ('reserved', 'Zarezerwowany'),
