@@ -19,6 +19,7 @@ if __name__ == '__main__':
     main()
 
     from Bilety_i_pociagi import models
+    from django.utils import timezone
 
     # how database looks like and what fields it has
     # route: name (Kraków-Warszawa)
@@ -31,9 +32,9 @@ if __name__ == '__main__':
 
     # cities: Kraków, Warszawa, Gdańsk, Wrocław, Poznań, Szczecin
 
-
     def create_data():
-        # create all possibilities of routes between cities Kraków-Warszawa is different than Warszawa-Kraków
+        # all possibilities of routes between cities 
+        # Kraków-Warszawa is different than Warszawa-Kraków
         models.Route.objects.get_or_create(name="Kraków-Warszawa")
         models.Route.objects.get_or_create(name="Kraków-Gdańsk")
         models.Route.objects.get_or_create(name="Kraków-Wrocław")
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         models.Route.objects.get_or_create(name="Szczecin-Wrocław")
         models.Route.objects.get_or_create(name="Szczecin-Poznań")
 
-        # create trains:
+
         # train_id: FT-(EXP/REG)0<NUMBER> (EXP - express, REG - regular) EXP 1-10, REG 1-27
         # travel_time is in format 03:00:00 and different for each train
         # train_type: express, regular (exp, reg)
@@ -150,7 +151,7 @@ if __name__ == '__main__':
         models.Train.objects.get_or_create(train_id="FT-REG027", travel_time="03:00:00",
                                             train_type="reg")  # poznań-szczecin
 
-        # create train routes for each train:
+
         # train_route: train, route (Kraków-Warszawa) - many to many
         models.TrainRoute.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP001"),
                                                 route=models.Route.objects.get(name="Kraków-Warszawa"))
@@ -321,33 +322,385 @@ if __name__ == '__main__':
         models.TrainRoute.objects.get_or_create(train=models.Train.objects.get(train_id="FT-REG027"),
                                                 route=models.Route.objects.get(name="Szczecin-Poznań"))
 
-        # create schedules for each train:
+
         # schedule: train, departure_city, departure_time, arrival_city, arrival_time
-        models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP001"),
-                                                departure_city="Kraków", departure_time="08:00:00",
-                                                arrival_city="Warszawa", arrival_time="11:00:00")
-        models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP002"),
-                                                departure_city="Warszawa", departure_time="12:00:00",
-                                                arrival_city="Kraków", arrival_time="15:00:00")
-        models.Schedule.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP003"),
-                                                departure_city="Kraków", departure_time="16:00:00",
-                                                arrival_city="Wrocław", arrival_time="17:40:00")
+
+        def calculate_arrival_time(departure_time_str, travel_time_str):
+                departure_time = timezone.datetime.strptime(departure_time_str, "%H:%M:%S").time()
+                hours, minutes, seconds = map(int, travel_time_str.split(':'))
+                travel_time = timezone.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                arrival_time = (timezone.datetime.combine(timezone.now(), departure_time) + travel_time).time()
+                return arrival_time
+
+        def create_schedule(train_id, departure_city, arrival_city, departure_time_str, travel_time_str):
+            train = models.Train.objects.get(train_id=train_id)
+            departure_time = timezone.datetime.strptime(departure_time_str, "%H:%M:%S").time()
+            arrival_time = calculate_arrival_time(departure_time_str, travel_time_str)
+
+            models.Schedule.objects.get_or_create(  train=train,
+                                                    departure_city=departure_city,
+                                                    arrival_city=arrival_city,
+                                                    departure_time=departure_time,
+                                                    arrival_time=arrival_time
+                                                    )
+
+        ### express trains ###
+
+        # Kraków-Warszawa and Warszawa-Kraków (only express trains)
+        trains_ids = ["FT-EXP001", "FT-EXP002"]
+        departures = ["08:00:00", "12:00:00", "16:00:00", "20:00:00"]
+        stations = ["Kraków", "Warszawa"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Kraków-Wrocław and Wrocław-Kraków (only express trains)
+        train_id = "FT-EXP003"
+        departures = ["07:00:00", "13:40:00", "20:20:00", "02:00:00"]
+        stations = ["Kraków", "Wrocław"]
+
+        for idx, departure in enumerate(departures):
+            departure_city = stations[idx % 2]
+            arrival_city = stations[(idx + 1) % 2]
+
+            create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Gdańsk and Gdańsk-Warszawa (only express trains)
+        trains_ids = ["FT-EXP004", "FT-EXP005"]
+        departures = ["06:00:00", "10:00:00", "14:00:00", "18:00:00"]
+        stations = ["Warszawa", "Gdańsk"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Wrocław and Wrocław-Warszawa (only express trains)
+        trains_ids = ["FT-EXP006", "FT-EXP007"]
+        departures = ["07:30:00", "11:30:00", "15:30:00", "19:30:00"]
+        stations = ["Warszawa", "Wrocław"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Poznań and Poznań-Warszawa (only express trains)
+        train_id = "FT-EXP008"
+        departures = ["10:00:00", "18:00:00"]
+        stations = ["Warszawa", "Poznań"]
+
+        for idx, departure in enumerate(departures):
+            departure_city = stations[idx % 2]
+            arrival_city = stations[(idx + 1) % 2]
+
+            create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Wrocław-Szczecin and Szczecin-Wrocław (only express trains)
+        trains_ids = ["FT-EXP009", "FT-EXP010"]
+        departures = ["09:12:00", "17:12:00"]
+        stations = ["Wrocław", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        ### regular trains ###
+
+        # Kraków-Warszawa and Warszawa-Kraków (only regular trains)
+        trains_ids = ["FT-REG001", "FT-REG002"]
+        departures = ["07:00:00", "12:30:00", "18:00:00", "00:00:00"]
+        stations = ["Kraków", "Warszawa"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Kraków-Gdańsk and Gdańsk-Kraków (only regular trains)
+        trains_ids = ["FT-REG003", "FT-REG004"]
+        departures = ["10:00:00", "22:00:00"]
+        stations = ["Kraków", "Gdańsk"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Kraków-Wrocław and Wrocław-Kraków (only regular trains)
+        train_id = "FT-REG005"
+        departures = ["06:00:00", "18:00:00"]
+        stations = ["Kraków", "Wrocław"]
+
+        for idx, departure in enumerate(departures):
+            departure_city = stations[idx % 2]
+            arrival_city = stations[(idx + 1) % 2]
+
+            create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Kraków-Poznań and Poznań-Kraków (only regular trains)
+        trains_ids = ["FT-REG006", "FT-REG007"]
+        departures = ["06:05:00", "11:45:00", "18:05:00", "00:15:00"]
+        stations = ["Kraków", "Poznań"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Kraków-Szczecin and Szczecin-Kraków (only regular trains)
+        trains_ids = ["FT-REG008", "FT-REG009"]
+        departures = ["08:30:00", "20:30:00"]
+        stations = ["Kraków", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Gdańsk and Gdańsk-Warszawa (only regular trains)
+        trains_ids = ["FT-REG010", "FT-REG011"]
+        departures = ["06:15:00", "11:00:00", "15:45:00", "20:30:00"]
+        stations = ["Warszawa", "Gdańsk"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Wrocław and Wrocław-Warszawa (only regular trains)
+        trains_ids = ["FT-REG012", "FT-REG013"]
+        departures = ["08:08:00", "13:38:00", "19:08:00", "00:38:00"]
+        stations = ["Warszawa", "Wrocław"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Poznań and Poznań-Warszawa (only regular trains)
+        train_id = "FT-REG014"
+        departures = ["07:36:00", "21:26:00"]
+        stations = ["Warszawa", "Poznań"]
+
+        for idx, departure in enumerate(departures):
+            departure_city = stations[idx % 2]
+            arrival_city = stations[(idx + 1) % 2]
+
+            create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Warszawa-Szczecin and Szczecin-Warszawa (only regular trains)
+        trains_ids = ["FT-REG015", "FT-REG016"]
+        departures = ["11:15:00", "18:45:00"]
+        stations = ["Warszawa", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Gdańsk-Wrocław and Wrocław-Gdańsk (only regular trains)
+        trains_ids = ["FT-REG017", "FT-REG018"]
+        departures = ["13:13:00", "21:13:00"]
+        stations = ["Gdańsk", "Wrocław"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Gdańsk-Poznań and Poznań-Gdańsk (only regular trains)
+        trains_ids = ["FT-REG019", "FT-REG020"]
+        departures = ["06:20:00", "12:00:00", "18:20:00", "00:00:00"]
+        stations = ["Gdańsk", "Poznań"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Gdańsk-Szczecin and Szczecin-Gdańsk (only regular trains)
+        trains_ids = ["FT-REG021", "FT-REG022"]
+        departures = ["07:07:00", "15:32:00"]
+        stations = ["Gdańsk", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Wrocław-Poznań and Poznań-Wrocław (only regular trains)
+        train_id = "FT-REG023"
+        departures = ["07:00:00", "13:00:00", "19:00:00", "01:00:00"]
+        stations = ["Wrocław", "Poznań"]
+
+        for idx, departure in enumerate(departures):
+            departure_city = stations[idx % 2]
+            arrival_city = stations[(idx + 1) % 2]
+
+            create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Wrocław-Szczecin and Szczecin-Wrocław (only regular trains)
+        trains_ids = ["FT-REG024", "FT-REG025"]
+        departures = ["10:11:00", "22:11:00"]
+        stations = ["Wrocław", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
+        # Poznań-Szczecin and Szczecin-Poznań (only regular trains)
+        trains_ids = ["FT-REG026", "FT-REG027"]
+        departures = ["08:17:00", "14:37:00"]
+        stations = ["Poznań", "Szczecin"]
+
+        for idx, train_id in enumerate(trains_ids):
+            start_station_index = idx % 2
+
+            for departure_idx, departure in enumerate(departures):
+                departure_city = stations[(start_station_index + departure_idx) % 2]
+                arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
+                create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
+
 
         # create passengers: (only one in case if no one is logged in)
         # passenger: first_name, last_name
         models.Passenger.objects.get_or_create(first_name="Mateusz", last_name="Walas")
 
-        # create seats for each train:
         # seat: train, number, class_type
-        # in loop
+        # 1st class is Premium, 2nd class is Standard
+        # in express trains there are 60% of seats in Premium class and 40% of seats in Standard class
+        # in regular trains there are 50% of seats in Premium class and 50% of seats in Standard class
+        # in database there are 10 seats in each train
+        # the names of seats are in format: [class-id (P or S)][seat_number in format 01-10]
+        # for example: P01, S10
 
-        # create tickets for each passenger:
+        express_trains_ids = [f"FT-EXP{i:03d}" for i in range(1, 11)]
+        regular_trains_ids = [f"FT-REG{i:03d}" for i in range(1, 28)]
+        total_seats = 10 # number of seats in each train
+
+        def create_seats_for_train(train_id, premium_seats, standard_seats):
+            train = models.Train.objects.get(train_id=train_id)
+
+            for seat_number in range(1, premium_seats + 1):
+                seat_id = f"P{seat_number:02d}"
+                models.Seat.objects.get_or_create(train=train, number=seat_id, class_type='first_class')
+
+            for seat_number in range(1, standard_seats + 1):
+                seat_id = f"S{seat_number:02d}"
+                models.Seat.objects.get_or_create(train=train, number=seat_id, class_type='second_class')
+
+        for train_id in express_trains_ids:
+            create_seats_for_train(train_id, int(total_seats * 0.6), total_seats - int(total_seats * 0.6))
+
+        for train_id in regular_trains_ids:
+            create_seats_for_train(train_id, total_seats // 2, total_seats // 2)
+
+        # create price for tickets on each route
+        # price: train, route, price
+        # price on Kraków-Warszawa and Warszawa-Kraków is the same, in other cases it is the same too
+        prices = {
+            'Kraków-Warszawa': {'exp': 180.00, 'reg': 75.00},
+            'Kraków-Gdańsk': {'reg': 250.00},
+            'Kraków-Wrocław': {'exp': 220.00, 'reg': 160.00},
+            'Kraków-Poznań': {'reg': 220.00},
+            'Kraków-Szczecin': {'reg': 330.00},
+            'Warszawa-Gdańsk': {'exp': 210.00, 'reg': 130.00},
+            'Warszawa-Wrocław': {'exp': 200.00, 'reg': 150.00},
+            'Warszawa-Poznań': {'exp': 185.00, 'reg': 140.00},
+            'Warszawa-Szczecin': {'reg': 250.00},
+            'Wrocław-Gdańsk': {'reg': 290.00},
+            'Wrocław-Poznań': {'reg': 90.00},
+            'Wrocław-Szczecin': {'exp': 310.00, 'reg': 250.00},
+            'Poznań-Gdańsk': {'reg': 210.00},
+            'Poznań-Szczecin': {'reg': 150.00},
+            'Gdańsk-Szczecin': {'reg': 230.00}
+        }
+
+        def create_ticket_price(route_name, route_prices):
+            try:
+                route = models.Route.objects.get(name=route_name)
+                for train_route in models.TrainRoute.objects.filter(route=route):
+                    train = train_route.train
+                    if train.train_type in route_prices:
+                        price = route_prices[train.train_type]
+                        models.TicketPrice.objects.get_or_create(
+                            train=train,
+                            route=route,
+                            defaults={'price': price}
+                        )
+            except models.Route.DoesNotExist:
+                print(f"Route {route_name} does not exist")
+
+        for route_name, route_prices in prices.items():
+            create_ticket_price(route_name, route_prices)
+            
+            reverse_route_name = '-'.join(route_name.split('-')[::-1])
+            if reverse_route_name not in prices:
+                create_ticket_price(reverse_route_name, route_prices)
+
         # no tickets are created at the beginning of the database creation
-
-        # print("Checked 30/30 routes.")
-        # print("Checked 10/10 exp trains.")
-        # print("Checked 27/27 reg trains.")
-        # print("Data created successfully!")
-
+        # if in database there are no tickets, it is meant that no one bought any tickets yet
 
     create_data()

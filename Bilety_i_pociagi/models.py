@@ -2,22 +2,14 @@ from django.db import models
 
 
 class Route(models.Model):
-    name = models.CharField(max_length=100, unique=True, blank=False, null=False)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
 
-class TrainRoute(models.Model):
-    train = models.ForeignKey('Train', on_delete=models.CASCADE)
-    route = models.ForeignKey(Route, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.train} - {self.route}"
-
-
 class Train(models.Model):
-    train_id = models.CharField(max_length=100, unique=True, blank=False, null=False)
+    train_id = models.CharField(max_length=100, unique=True)
     # travel_time is in format 03:00:00 and different for each train
     travel_time = models.CharField(max_length=2+1+2+1+2)
     train_type = models.CharField(
@@ -33,15 +25,23 @@ class Train(models.Model):
         return self.train_id
 
 
-class Schedule(models.Model):
-    train = models.ForeignKey(Train, on_delete=models.CASCADE)  # Połączenie z pociągiem
-    departure_city = models.CharField(max_length=100)  # Miasto odjazdu
-    departure_time = models.TimeField()  # Godzina odjazdu
-    arrival_city = models.CharField(max_length=100)  # Miasto przyjazdu
-    arrival_time = models.TimeField()  # Godzina przyjazdu
+class TrainRoute(models.Model):
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.train} {self.departure_city} -> {self.arrival_city}"
+        return f"{self.train} - {self.route}"
+
+
+class Schedule(models.Model):
+    train = models.ForeignKey(Train, on_delete=models.CASCADE) 
+    departure_city = models.CharField(max_length=100) 
+    departure_time = models.TimeField()  
+    arrival_city = models.CharField(max_length=100)  
+    arrival_time = models.TimeField() 
+
+    def __str__(self):
+        return f"{self.train} {self.departure_time} {self.departure_city} -> {self.arrival_time} {self.arrival_city}"
 
 
 class Passenger(models.Model):
@@ -55,14 +55,6 @@ class Passenger(models.Model):
 
 
 class Seat(models.Model):
-    # """
-    # Model reprezentujący miejsce w pociągu.
-
-    # Pola:
-    # - train: pociąg, do którego przypisane jest miejsce.
-    # - number: numer miejsca (np. 23A).
-    # - class_type: klasa miejsca (np. pierwsza klasa, druga klasa).
-    # """
     TRAIN_CLASS_CHOICES = (
         ('first_class', 'Pierwsza klasa'),
         ('second_class', 'Druga klasa'),
@@ -76,28 +68,46 @@ class Seat(models.Model):
         return f"Miejsce {self.number} - {self.train} ({self.get_class_type_display()})"
 
 
-class Ticket(models.Model):
-    # """
-    # Model reprezentujący bilet pasażera na pociąg.
+class TicketPrice(models.Model):
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    # Pola:
-    # - passenger: pasażer, do którego przypisany jest bilet.
-    # - seat: miejsce, na które nabyto bilet.
-    # - valid_date: data ważności biletu.
-    # - price: cena biletu.
-    # - status: status biletu (dostępny, zarezerwowany, potwierdzony).
-    # """
+    def __str__(self):
+        return f"{self.train} na trasie {self.route} - Cena: {self.price} zł"
+
+
+class Ticket(models.Model):
     STATUS_CHOICES = (
-        ('available', 'Dostępny'),
         ('reserved', 'Zarezerwowany'),
-        ('confirmed', 'Potwierdzony'),
+        ('confirmed', 'Kupiony'),
     )
 
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     valid_date = models.DateField()
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            ticket_price = TicketPrice.objects.get(
+                train=self.schedule.train,
+                route=self.schedule.train.trainroute_set.first().route
+            )
+            self.price = ticket_price.price
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Bilet {self.id} - {self.passenger} - {self.seat} - {self.valid_date} ({self.get_status_display()})"
+        train = self.seat.train
+        route = train.trainroute_set.first().route
+        return f"Bilet {self.id} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()}"
+
+    # TODO: podczas kupowania biletu, w miejscu formularza gdzie się będzie wypełniało dane, zadbać o to, żeby 
+    # nie można było wybrać miejsca pociagu, który nie kursuje na danej trasie
+    # teraz jest tak:
+    # Bilet 1 - Mateusz Walas - Miejsce: Miejsce 001-PR - FT-EXP001 (Pierwsza klasa) 
+    # - Trasa: FT-EXP005 Warszawa -> Gdańsk - Data i godzina odjazdu: 10:00:00 
+    # - Ważny w: 2023-12-03 - Status: Zarezerwowany
+    # Miejsce 001-PR to miejsce z pociągu FT-EXP001, który nie kursuje na trasie FT-EXP005 Warszawa -> Gdańsk
