@@ -64,6 +64,8 @@ CHANNEL_LAYERS = {
 
 ROOT_URLCONF = 'bilety_kolejowe_projekt_pociagi.urls'
 
+AUTH_USER_MODEL = 'Bilety_i_pociagi.CustomUser'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

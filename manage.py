@@ -624,10 +624,6 @@ if __name__ == '__main__':
                 create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
 
 
-        # create passengers: (only one in case if no one is logged in)
-        # passenger: first_name, last_name
-        models.Passenger.objects.get_or_create(first_name="Mateusz", last_name="Walas")
-
         # seat: train, number, class_type
         # 1st class is Premium, 2nd class is Standard
         # in express trains there are 60% of seats in Premium class and 40% of seats in Standard class

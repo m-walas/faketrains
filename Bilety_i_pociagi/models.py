@@ -1,4 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+import datetime
+
+class CustomUser(AbstractUser):
+    def get_tickets(self):
+        return self.ticket_set.all()
+    
+    def get_past_tickets(self):
+        return self.ticket_set.filter(valid_date__lt=datetime.date.today())
+    
+    def get_future_tickets(self):
+        return self.ticket_set.filter(valid_date__gte=datetime.date.today())
 
 
 class Route(models.Model):
@@ -44,16 +57,6 @@ class Schedule(models.Model):
         return f"{self.train} {self.departure_time} {self.departure_city} -> {self.arrival_time} {self.arrival_city}"
 
 
-class Passenger(models.Model):
-    # all fields are required
-    first_name = models.CharField(max_length=100, blank=False, null=False)
-    last_name = models.CharField(max_length=100, blank=False, null=False)
-    email = models.EmailField(max_length=254, blank=False, null=False, unique=True)
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-
-
 class Seat(models.Model):
     TRAIN_CLASS_CHOICES = (
         ('first_class', 'Pierwsza klasa'),
@@ -83,7 +86,7 @@ class Ticket(models.Model):
         ('confirmed', 'Kupiony'),
     )
 
-    passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
+    passenger = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     valid_date = models.DateField()
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)

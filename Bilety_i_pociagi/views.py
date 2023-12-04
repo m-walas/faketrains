@@ -1,41 +1,24 @@
-from django.http import JsonResponse
-from django.contrib.auth import login, authenticate
-from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views import generic
+from .forms import CustomUserCreationForm
 
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'Nieprawidłowe dane logowania.')
-    return render(request, 'login.html')
+class SignUpView(generic.CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'
 
-
-def registration_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
-
-
-def sample_data(request):
-    data = {
-        'message': 'Witaj z Django!',
-        'value': 42
-    }
-    return JsonResponse(data)
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        print("Form is valid. Redirecting to login page.")
+        return response
+    
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        print("Form is invalid. Rendering form with errors.")
+        print(form.errors)
+        return response
 
 
 def index(request):

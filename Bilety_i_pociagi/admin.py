@@ -3,11 +3,11 @@ from django.contrib.admin import ModelAdmin
 from Bilety_i_pociagi.models import Seat
 from Bilety_i_pociagi.models import Ticket
 from Bilety_i_pociagi.models import Train
-from Bilety_i_pociagi.models import Passenger
 from Bilety_i_pociagi.models import Schedule
 from Bilety_i_pociagi.models import TrainRoute
 from Bilety_i_pociagi.models import Route
 from Bilety_i_pociagi.models import TicketPrice
+from Bilety_i_pociagi.models import CustomUser
 
 
 class TicketAdmin(ModelAdmin):
@@ -19,7 +19,7 @@ class TrainRouteInline(admin.TabularInline):
 
 
 @admin.register(Train)
-class TrainAdmin(admin.ModelAdmin):
+class TrainAdmin(ModelAdmin):
     list_display = ('train_id', 'route', 'travel_time')
     inlines = [TrainRouteInline] 
 
@@ -41,7 +41,8 @@ class TrainAdmin(admin.ModelAdmin):
 admin.site.register(Route)
 admin.site.register(TrainRoute)
 admin.site.register(Schedule)
-admin.site.register(Passenger)
 admin.site.register(Seat)
 admin.site.register(TicketPrice)
 admin.site.register(Ticket)
+
+admin.site.register(CustomUser)
