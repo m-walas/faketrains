@@ -1,22 +1,12 @@
-# Wybierz obraz bazowy zgodny z Twoim projektem Django (np. Python)
-FROM python:3.8
-LABEL authors="Mateusz"
-
-# Ustal katalog roboczy w kontenerze
+FROM python:3.9
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV RUNNING_IN_DOCKER=true
 WORKDIR /app
-
-# Zainstaluj zależności backendu Django
 COPY requirements.txt /app/
-RUN pip install -r requirements.txt
-
-# Skopiuj kod źródłowy Django do kontenera
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
-
-# Zbuduj aplikację Django
 RUN python manage.py migrate
-
-# Ustaw zmienne środowiskowe dla aplikacji Django
-ENV DJANGO_SETTINGS_MODULE=bilety_kolejowe_projekt_pociagi.settings
-
-# Uruchom serwer Django na porcie 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN python manage.py collectstatic --noinput
+EXPOSE 5000
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "bilety_kolejowe_projekt_pociagi.wsgi:application"]
