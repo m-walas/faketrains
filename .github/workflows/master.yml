@@ -14,9 +14,9 @@ jobs:
     - name: Sync files 📂
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
       with:
-        host: ${{ secrets.SERVER_IP }}
+        server: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.SSH_PASSWORD }}
         port: 22
-        source: "."
-        target: "/home/mateusz/train-tickets/"
+        local-dir: "."
+        server-dir: "/home/mateusz/train-tickets/"
