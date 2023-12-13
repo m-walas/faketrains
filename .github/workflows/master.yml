@@ -1,22 +1,29 @@
+name: Build and Deploy 🚀
+
 on:
   push:
-    branches: 
-      - master
-name: Build and Deploy 🚀
+    branches: [ master ]
+
 jobs:
-  build-and-deploy:
+  build:
     name: Deploy
     runs-on: ubuntu-latest
+    
     steps:
-    - name: Get latest code 🚛
-      uses: actions/checkout@v4.1.0
+    - name: Checkout code 🛎️
+      uses: actions/checkout@v2
 
-    - name: Sync files 📂
-      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+    - name: Set up SSH 🚛 and Sync files 📂
+      uses: appleboy/ssh-action@master
       with:
-        server: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
         port: 22
-        local-dir: "./"
-        server-dir: "/home/mateusz/train-tickets/"
+        script: |
+          cd /home/ubuntu/autodeploy_trains/train-tickets/
+          git pull origin master
+          docker-compose down
+          docker-compose build
+          docker-compose up -d
+          echo "Deployment complete"
