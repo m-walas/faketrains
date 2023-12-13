@@ -50,8 +50,22 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+# name of vue app on website is: faketrains.mwalas.pl
+# name of vue app on localhost is: localhost:5001
+# name of django app on website is: django.mwalas.pl
+# name of django app on localhost is: localhost:5000
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
+    "http://localhost:5001",
+    "http://localhost:5000",
+    "https://faketrains.mwalas.pl",
+    "https://django.mwalas.pl",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5000',
+    'http://localhost:5001',
+    'https://faketrains.mwalas.pl',
+    'https://django.mwalas.pl',
 ]
 
 CHANNEL_LAYERS = {
