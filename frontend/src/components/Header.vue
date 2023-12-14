@@ -1,7 +1,7 @@
 <template>
     
     <v-sheet class="d-flex justify-space-between align-center " width="100%">
-      <div class="text-h4 ml-3">FakeTrains</div>
+      <div class="text-h4 ml-3">Test</div>
     </v-sheet>
 </template>
 
