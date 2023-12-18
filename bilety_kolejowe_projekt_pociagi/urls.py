@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LogoutView, LoginView
-from Bilety_i_pociagi.views import index, SignUpView
+from Bilety_i_pociagi.views import index, SignUpView, search_trains
 
 
 urlpatterns = [
@@ -25,5 +25,6 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='index'), name="logout"),
+    path('search_trains/', search_trains, name='search_trains'),
     path('admin/', admin.site.urls),
 ]

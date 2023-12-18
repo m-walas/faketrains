@@ -107,10 +107,10 @@ class Ticket(models.Model):
         route = train.trainroute_set.first().route
         return f"Bilet {self.id} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()}"
 
-    # TODO: podczas kupowania biletu, w miejscu formularza gdzie się będzie wypełniało dane, zadbać o to, żeby 
-    # nie można było wybrać miejsca pociagu, który nie kursuje na danej trasie
-    # teraz jest tak:
-    # Bilet 1 - Mateusz Walas - Miejsce: Miejsce 001-PR - FT-EXP001 (Pierwsza klasa) 
-    # - Trasa: FT-EXP005 Warszawa -> Gdańsk - Data i godzina odjazdu: 10:00:00 
-    # - Ważny w: 2023-12-03 - Status: Zarezerwowany
-    # Miejsce 001-PR to miejsce z pociągu FT-EXP001, który nie kursuje na trasie FT-EXP005 Warszawa -> Gdańsk
+    # !TODO: podczas kupowania biletu, w miejscu formularza gdzie się będzie wypełniało dane, zadbać o to, żeby 
+    # !nie można było wybrać miejsca pociagu, który nie kursuje na danej trasie
+    # !teraz jest tak:
+    # !Bilet 1 - Mateusz Walas - Miejsce: Miejsce 001-PR - FT-EXP001 (Pierwsza klasa) 
+    # !- Trasa: FT-EXP005 Warszawa -> Gdańsk - Data i godzina odjazdu: 10:00:00 
+    # !- Ważny w: 2023-12-03 - Status: Zarezerwowany
+    # !Miejsce 001-PR to miejsce z pociągu FT-EXP001, który nie kursuje na trasie FT-EXP005 Warszawa -> Gdańsk
