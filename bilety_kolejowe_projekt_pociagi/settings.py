@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from logger import colored_logger as logger
 import os
 load_dotenv()
 
@@ -28,8 +29,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 running_in_docker = os.environ.get('RUNNING_IN_DOCKER') == 'true'
 if running_in_docker:
     DEBUG = False
+    logger.critical("🚀 ~ file: settings.py ~ line 30 ~ DEBUG set to False")
+    logger.critical("🚀 ~ file: settings.py ~ line 31 ~ RUNNING_IN_DOCKER set to True")
 else:
     DEBUG = True
+    logger.critical("🚀 ~ file: settings.py ~ line 30 ~ DEBUG set to True")
+    logger.critical("🚀 ~ file: settings.py ~ line 31 ~ RUNNING_IN_DOCKER set to False")
 
 ALLOWED_HOSTS = ['*']
 
@@ -44,6 +49,8 @@ INSTALLED_APPS = [
     'Bilety_i_pociagi',
     'corsheaders',
     'channels',
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 # name of vue app on website is: faketrains.mwalas.pl
@@ -84,6 +92,15 @@ CHANNEL_LAYERS = {
 ROOT_URLCONF = 'bilety_kolejowe_projekt_pociagi.urls'
 
 AUTH_USER_MODEL = 'Bilety_i_pociagi.CustomUser'
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
 
 TEMPLATES = [
     {

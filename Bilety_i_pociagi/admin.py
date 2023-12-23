@@ -8,7 +8,9 @@ from Bilety_i_pociagi.models import TrainRoute
 from Bilety_i_pociagi.models import Route
 from Bilety_i_pociagi.models import TicketPrice
 from Bilety_i_pociagi.models import CustomUser
+from Bilety_i_pociagi.models import City
 
+from logger import colored_logger as logger
 
 class TicketAdmin(ModelAdmin):
     list_display = ('passenger', 'seat', 'price')
@@ -37,12 +39,21 @@ class TrainAdmin(ModelAdmin):
             return list()
         return super(TrainAdmin, self).get_inline_instances(request, obj)
 
-
+logger.warning("🚀 ~ file: admin.py ~ line 40+ ~ Giving access to admin panel for models: ")
+logger.warning("🚀 ~ file: admin.py ~ Train")
+logger.warning("🚀 ~ file: admin.py ~ Route")
+logger.warning("🚀 ~ file: admin.py ~ TrainRoute")
+logger.warning("🚀 ~ file: admin.py ~ Schedule")
+logger.warning("🚀 ~ file: admin.py ~ Seat")
+logger.warning("🚀 ~ file: admin.py ~ TicketPrice")
+logger.warning("🚀 ~ file: admin.py ~ Ticket")
+logger.warning("🚀 ~ file: admin.py ~ City")
+logger.warning("🚀 ~ file: admin.py ~ CustomUser")
 admin.site.register(Route)
 admin.site.register(TrainRoute)
 admin.site.register(Schedule)
 admin.site.register(Seat)
 admin.site.register(TicketPrice)
 admin.site.register(Ticket)
-
+admin.site.register(City)
 admin.site.register(CustomUser)

@@ -1,11 +1,14 @@
 import os
 import sys
 
+from logger import colored_logger as logger
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bilety_kolejowe_projekt_pociagi.settings')
     try:
         from django.core.management import execute_from_command_line
+        logger.info("🚀 ~ file: manage.py ~ main ~ Starting server")
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Django. Are you sure it's installed and "
@@ -21,7 +24,7 @@ if __name__ == '__main__':
     from Bilety_i_pociagi import models
     from django.utils import timezone
 
-    # how database looks like and what fields it has
+    #? how database looks like and what fields it has
     # route: name (Kraków-Warszawa)
     # train_route: train, routes (Kraków-Warszawa) - many to many
     # train: train_id, travel_time in format 03:00:00, train_type, routes
@@ -30,48 +33,44 @@ if __name__ == '__main__':
     # seat: train, number, class_type
     # ticket: passenger, seat, valid_date, price, status
 
-    # cities: Kraków, Warszawa, Gdańsk, Wrocław, Poznań, Szczecin
-
     def create_data():
-        # all possibilities of routes between cities 
-        # Kraków-Warszawa is different than Warszawa-Kraków
-        models.Route.objects.get_or_create(name="Kraków-Warszawa")
-        models.Route.objects.get_or_create(name="Kraków-Gdańsk")
-        models.Route.objects.get_or_create(name="Kraków-Wrocław")
-        models.Route.objects.get_or_create(name="Kraków-Poznań")
-        models.Route.objects.get_or_create(name="Kraków-Szczecin")
 
-        models.Route.objects.get_or_create(name="Warszawa-Kraków")
-        models.Route.objects.get_or_create(name="Warszawa-Gdańsk")
-        models.Route.objects.get_or_create(name="Warszawa-Wrocław")
-        models.Route.objects.get_or_create(name="Warszawa-Poznań")
-        models.Route.objects.get_or_create(name="Warszawa-Szczecin")
+        #? cities: 
+        # Kraków ->   19°57'E   50°03'N
+        # Warszawa -> 21°02'E   52°12'N
+        # Gdańsk ->   18°38'E   54°22'N
+        # Wrocław ->  17°02'E   51°07'N
+        # Poznań ->   16°55'E   52°25'N
+        # Szczecin -> 14°34'E   53°26'N
 
-        models.Route.objects.get_or_create(name="Gdańsk-Kraków")
-        models.Route.objects.get_or_create(name="Gdańsk-Warszawa")
-        models.Route.objects.get_or_create(name="Gdańsk-Wrocław")
-        models.Route.objects.get_or_create(name="Gdańsk-Poznań")
-        models.Route.objects.get_or_create(name="Gdańsk-Szczecin")
+        #? cities in format (name, geo_longitude, geo_latitude)
+        logger.warning("🚀 ~ file: manage.py ~ Existing cities: Kraków, Warszawa, Gdańsk, Wrocław, Poznań, Szczecin") 
+        cities = [ 
+            ("Kraków", 19.57, 50.03), 
+            ("Warszawa", 21.02, 52.12), 
+            ("Gdańsk", 18.38, 54.22), 
+            ("Wrocław", 17.02, 51.07), 
+            ("Poznań", 16.55, 52.25), 
+            ("Szczecin", 14.34, 53.26)
+            #! EDIT AND ADD MORE CITIES ONLY HERE !# 
+            ]
 
-        models.Route.objects.get_or_create(name="Wrocław-Kraków")
-        models.Route.objects.get_or_create(name="Wrocław-Warszawa")
-        models.Route.objects.get_or_create(name="Wrocław-Gdańsk")
-        models.Route.objects.get_or_create(name="Wrocław-Poznań")
-        models.Route.objects.get_or_create(name="Wrocław-Szczecin")
+        #? create cities in database if not exists
+        logger.info("🚀 ~ file: manage.py ~ create_data ~ Creating cities in database")
+        for city in cities:
+            models.City.objects.get_or_create(name=city[0], geo_longitude=city[1], geo_latitude=city[2])
 
-        models.Route.objects.get_or_create(name="Poznań-Kraków")
-        models.Route.objects.get_or_create(name="Poznań-Warszawa")
-        models.Route.objects.get_or_create(name="Poznań-Gdańsk")
-        models.Route.objects.get_or_create(name="Poznań-Wrocław")
-        models.Route.objects.get_or_create(name="Poznań-Szczecin")
+##############################################################################################################
+        #* all possibilities of routes between cities 
+        logger.info("🚀 ~ file: manage.py ~ create_data ~ Creating routes in database")
+        #? Kraków-Warszawa is different than Warszawa-Kraków
+        for idx, city in enumerate(cities):
+            for idx2, city2 in enumerate(cities):
+                if idx != idx2:
+                    models.Route.objects.get_or_create(name=f"{city[0]}-{city2[0]}")
 
-        models.Route.objects.get_or_create(name="Szczecin-Kraków")
-        models.Route.objects.get_or_create(name="Szczecin-Warszawa")
-        models.Route.objects.get_or_create(name="Szczecin-Gdańsk")
-        models.Route.objects.get_or_create(name="Szczecin-Wrocław")
-        models.Route.objects.get_or_create(name="Szczecin-Poznań")
-
-
+##############################################################################################################
+        logger.info("🚀 ~ file: manage.py ~ create_data ~ Creating trains in database")
         # train_id: FT-(EXP/REG)0<NUMBER> (EXP - express, REG - regular) EXP 1-10, REG 1-27
         # travel_time is in format 03:00:00 and different for each train
         # train_type: express, regular (exp, reg)
@@ -95,6 +94,7 @@ if __name__ == '__main__':
                                             train_type="exp")  # wrocław-szczecin
         models.Train.objects.get_or_create(train_id="FT-EXP010", travel_time="04:00:00",
                                             train_type="exp")  # wrocław-szczecin
+        #! EDIT AND ADD MORE EXPRESS TRAINS ONLY HERE !#
 
         models.Train.objects.get_or_create(train_id="FT-REG001", travel_time="04:30:00",
                                             train_type="reg")  # kraków-warszawa
@@ -150,9 +150,11 @@ if __name__ == '__main__':
                                             train_type="reg")  # poznań-szczecin
         models.Train.objects.get_or_create(train_id="FT-REG027", travel_time="03:00:00",
                                             train_type="reg")  # poznań-szczecin
+        #! EDIT AND ADD MORE REGIONAL TRAINS ONLY HERE !#
 
-
-        # train_route: train, route (Kraków-Warszawa) - many to many
+##############################################################################################################
+        logger.info("🚀 ~ file: manage.py ~ create_data ~ Creating train routes in database")
+        #? train_route: train, route (Kraków-Warszawa) - many to many
         models.TrainRoute.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP001"),
                                                 route=models.Route.objects.get(name="Kraków-Warszawa"))
         models.TrainRoute.objects.get_or_create(train=models.Train.objects.get(train_id="FT-EXP001"),
@@ -322,7 +324,10 @@ if __name__ == '__main__':
         models.TrainRoute.objects.get_or_create(train=models.Train.objects.get(train_id="FT-REG027"),
                                                 route=models.Route.objects.get(name="Szczecin-Poznań"))
 
+        #! EDIT AND ADD MORE TRAIN ROUTES ONLY HERE !#
+        #! REMEMBER TO ADD TRAIN ROUTES FOR BOTH DIRECTIONS !#
 
+##############################################################################################################
         # schedule: train, departure_city, departure_time, arrival_city, arrival_time
 
         def calculate_arrival_time(departure_time_str, travel_time_str):
@@ -424,7 +429,9 @@ if __name__ == '__main__':
 
                 create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
 
-        ### regular trains ###
+        # ! ADD MORE (express trains only) SCHEDULES ONLY HERE IF NEEDED ! #
+
+        #*########### REGULAR TRAINS ############
 
         # Kraków-Warszawa and Warszawa-Kraków (only regular trains)
         trains_ids = ["FT-REG001", "FT-REG002"]
@@ -623,7 +630,10 @@ if __name__ == '__main__':
                 arrival_city = stations[(start_station_index + departure_idx + 1) % 2]
                 create_schedule(train_id, departure_city, arrival_city, departure, models.Train.objects.get(train_id=train_id).travel_time)
 
+        # ! ADD MORE (regular trains only) SCHEDULES ONLY HERE IF NEEDED ! #
 
+
+##############################################################################################################
         # seat: train, number, class_type
         # 1st class is Premium, 2nd class is Standard
         # in express trains there are 60% of seats in Premium class and 40% of seats in Standard class
@@ -653,6 +663,7 @@ if __name__ == '__main__':
         for train_id in regular_trains_ids:
             create_seats_for_train(train_id, total_seats // 2, total_seats // 2)
 
+##############################################################################################################
         # create price for tickets on each route
         # price: train, route, price
         # price on Kraków-Warszawa and Warszawa-Kraków is the same, in other cases it is the same too
@@ -672,6 +683,7 @@ if __name__ == '__main__':
             'Poznań-Gdańsk': {'reg': 210.00},
             'Poznań-Szczecin': {'reg': 150.00},
             'Gdańsk-Szczecin': {'reg': 230.00}
+            #! ONLY EDIT HERE IF NEEDED !#
         }
 
         def create_ticket_price(route_name, route_prices):
@@ -687,7 +699,7 @@ if __name__ == '__main__':
                             defaults={'price': price}
                         )
             except models.Route.DoesNotExist:
-                print(f"Route {route_name} does not exist")
+                logger.error(f"🚀 ~ file: manage.py ~ create_data ~ create_ticket_price ~ Route {route_name} does not exist")
 
         for route_name, route_prices in prices.items():
             create_ticket_price(route_name, route_prices)
