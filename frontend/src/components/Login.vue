@@ -34,6 +34,14 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
 
+function getCsrfToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || '';
+}
+
 export default {
   setup() {
     const router = useRouter();
@@ -42,24 +50,30 @@ export default {
     const passwordField = ref('');
 
     const submitForm = () => {
+      const csrfToken = getCsrfToken();
       const userData = {
         username: emailField.value,
         password: passwordField.value,
       };
 
-      axios.post('/api/user/login', userData, { withCredentials: true })
-        .then(response => {
-          if (response.data.success) {
-            authStore.login();
-            router.push('/');
-          } else {
-            alert('Błąd logowania: Niepoprawne dane');
-          }
-        })
-        .catch(error => {
-          console.error('Błąd połączenia z serwerem:', error);
-          alert(`Błąd połączenia z serwerem: ${error.response ? error.response.data.detail : error.message}`);
-        });
+      axios.post('/api/user/login', userData, {
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': csrfToken
+        }
+      })
+      .then(response => {
+        if (response.data.success) {
+          authStore.login();
+          router.push('/');
+        } else {
+          alert('Błąd logowania: Niepoprawne dane');
+        }
+      })
+      .catch(error => {
+        console.error('Błąd połączenia z serwerem:', error);
+        alert(`Błąd połączenia z serwerem: ${error.response ? error.response.data.detail : error.message}`);
+      });
     };
 
     const navigateToRegister = () => {
