@@ -2,89 +2,45 @@
   <v-card class="pa-4">
     <v-card-text class="text-h3 mb-8 text-center">Logowanie</v-card-text>
     <v-form v-on:keydown.enter="submitForm">
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="emailField"
-        label="Email"
-      ></v-text-field>
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="passwordField"
-        label="Hasło"
-        type="password"
-      ></v-text-field>
-      <v-row class="ma-1" justify="end" style="max-width: 100%">
+      <v-text-field class="input-field" v-model="email" label="Email"></v-text-field>
+      <v-text-field class="input-field" v-model="password" label="Hasło" type="password"></v-text-field>
+      <v-row class="ma-1" justify="end">
         <v-btn @click="submitForm">Zaloguj</v-btn>
       </v-row>
     </v-form>
-    <v-card-text class="text-caption pt-4 pb-0 text-center">
-      Nie masz konta? Kliknij
-      <button class="registerButton" density="compact" @click="navigateToRegister">
-        tutaj!
-      </button>
-    </v-card-text>
   </v-card>
 </template>
 
-<script lang="ts">
+<script>
 import axios from 'axios';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
 
-function getCsrfToken() {
-  const csrfToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrftoken='))
-    ?.split('=')[1];
-  return csrfToken || '';
-}
-
 export default {
   setup() {
-    const router = useRouter();
+    const email = ref('');
+    const password = ref('');
     const authStore = useAuthStore();
-    const emailField = ref('');
-    const passwordField = ref('');
 
-    const submitForm = () => {
-      const csrfToken = getCsrfToken();
-      const userData = {
-        username: emailField.value,
-        password: passwordField.value,
-      };
-
-      axios.post('/api/user/login', userData, {
-        withCredentials: true,
-        headers: {
-          'X-CSRFToken': csrfToken
-        }
-      })
-      .then(response => {
+    const submitForm = async () => {
+      try {
+        const response = await axios.post('/api/user/login', {
+          username: email.value,
+          password: password.value
+        });
         if (response.data.success) {
-          authStore.login();
-          router.push('/');
+          authStore.login(response.data.username, response.data.firstName, response.data.lastName);
+          // Przekierowanie lub inna logika
         } else {
           alert('Błąd logowania: Niepoprawne dane');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Błąd połączenia z serwerem:', error);
-        alert(`Błąd połączenia z serwerem: ${error.response ? error.response.data.detail : error.message}`);
-      });
+        alert('Błąd połączenia z serwerem');
+      }
     };
 
-    const navigateToRegister = () => {
-      router.push('/auth/register');
-    };
-
-    return { emailField, passwordField, submitForm, navigateToRegister };
+    return { email, password, submitForm };
   }
 };
 </script>
-
-<style>
-
-</style>
