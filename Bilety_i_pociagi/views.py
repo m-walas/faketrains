@@ -9,6 +9,7 @@ from math import radians, cos, sin, sqrt, atan2
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City
 from .serializers import CitySerializer
@@ -16,6 +17,7 @@ from .serializers import CitySerializer
 from logger import colored_logger as logger
 
 
+@ensure_csrf_cookie
 @api_view(['POST'])
 def login_view(request):
     username = request.data.get('username')
