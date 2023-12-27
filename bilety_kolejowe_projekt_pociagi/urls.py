@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.contrib.auth.views import LogoutView, LoginView
 from Bilety_i_pociagi.views import index, SignUpView, search_trains
 #? serializers
-from Bilety_i_pociagi.views import CitySearchView, login_view, logout_view, user_status
+from Bilety_i_pociagi.views import CitySearchView, login_view, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
 
 
 urlpatterns = [
@@ -33,6 +33,9 @@ urlpatterns = [
     path('api/cities/', CitySearchView.as_view(), name='city-search'),
     path('api/search_trains/', search_trains, name='search_trains'),
     path('api/user/login', login_view, name='login'),
+    path('api/user/register', register_view, name='register'),
     path('api/user/logout', logout_view, name='logout'),
     path('api/user/status', user_status, name='user_status'),
+    path('api/receive_route', receive_selected_route, name='receive_selected_route'),
+    path('api/get_train_seats_with_availability/<str:train_id>/<str:departure_date>/<str:departure_time>/', get_train_seats_with_availability, name='get_train_seats_with_availability'),
 ]

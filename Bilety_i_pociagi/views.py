@@ -9,8 +9,11 @@ from math import radians, cos, sin, sqrt, atan2
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.views.decorators.http import require_POST
+import json
+import datetime
 
-from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City
+from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 from .serializers import CitySerializer
 
 from logger import colored_logger as logger
@@ -32,6 +35,24 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return JsonResponse({"success": True})
+
+
+@api_view(['POST'])
+def register_view(request):
+    first_name = request.data.get('firstName')
+    last_name = request.data.get('lastName')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    second_password = request.data.get('secondPassword')
+
+    if password != second_password:
+        return JsonResponse({"success": False, "error": "Passwords do not match"}, status=400)
+
+    try:
+        CustomUserCreationForm.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
+        return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -65,6 +86,56 @@ class CitySearchView(APIView):
         cities = City.objects.filter(name__istartswith=query)
         serializer = CitySerializer(cities, many=True)
         return Response(serializer.data)
+
+
+@require_POST
+def receive_selected_route(request):
+    try:
+        data = json.loads(request.body)
+        train_id = data.get('train_id')
+        departure_time = data.get('departure_time')
+        departure_date = data.get('departure_date')
+        departure_city = data.get('departure_city')
+        arrival_city = data.get('arrival_city')
+
+        logger.debug(f"🚀 ~ file: views.py ~ receive_selected_route ~ route selected from frontend: ")
+        logger.debug(f"🚀 ~ file: views.py ~ train_id: {train_id}")
+        logger.debug(f"🚀 ~ file: views.py ~ departure_time: {departure_time}")
+
+        return JsonResponse({"status": "success", "message": "Trasa odebrana"})
+    except json.JSONDecodeError:
+        logger.error("❌ JSONDecodeError ❌")
+        return JsonResponse({"status": "error", "message": "Nieprawidłowe dane"}, status=400)
+
+
+def get_train_seats_with_availability(request, train_id, departure_date, departure_time):
+    try:
+        departure_date = datetime.datetime.strptime(departure_date, '%Y-%m-%d').date()
+        departure_time = datetime.datetime.strptime(departure_time, '%H:%M:%S').time()
+
+        train = Train.objects.get(train_id=train_id)
+        schedule = Schedule.objects.get(train=train, departure_time=departure_time)
+
+        seats = Seat.objects.filter(train=train)
+        seats_data = []
+        for seat in seats:
+            ticket_exists = Ticket.objects.filter(seat=seat, valid_date=departure_date, schedule=schedule).exists()
+            seats_data.append({
+                "seat_number": seat.number,
+                "class_type": seat.class_type,
+                "is_available": not ticket_exists
+            })
+
+        logger.info(f"🚀 ~ file: views.py ~ get_train_seats_with_availability ~ zwrócono miejsca")
+        return JsonResponse({"seats": seats_data})
+    except Train.DoesNotExist:
+        logger.error("❌ Train.DoesNotExist ❌")
+        return JsonResponse({"error": "Pociąg nie istnieje"}, status=404)
+    except Schedule.DoesNotExist:
+        logger.error("❌ Schedule.DoesNotExist ❌")
+        return JsonResponse({"error": "Harmonogram nie istnieje"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def index(request):
