@@ -1,23 +1,22 @@
 <template>
-    <Register></Register>
-  </template>
+  <Register></Register>
+</template>
   
-  <script lang="ts">
-  import Register from '../components/Register.vue';
-  
-  export default {
-    data() {
-      return {};
-    },
+<script lang="ts">
+import Register from "../components/Register.vue";
 
-    methods: {
-      
-    },
+export default {
+  data() {
+    return {}
+  },
 
-    components: {
-      Register
-    }
+  methods: {
+    
+  },
 
-  };
-  </script>
-  
+  components: {
+    Register
+  }
+
+};
+</script>
