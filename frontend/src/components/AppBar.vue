@@ -57,7 +57,7 @@ export default {
     };
 
     const login = () => {
-      router.push('/auth/login');
+      router.push('/auth');
     };
 
     const toggleTheme = () => {
