@@ -11,7 +11,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
