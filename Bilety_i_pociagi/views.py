@@ -1,14 +1,45 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
+from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City
+from .serializers import CitySerializer
 
 from logger import colored_logger as logger
+
+
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({"success": True, "username": user.username})
+    else:
+        return JsonResponse({"success": False}, status=401)
+
+
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return JsonResponse({"success": True})
+
+
+@api_view(['GET'])
+def user_status(request):
+    if request.user.is_authenticated:
+        logger.debug(f"🚀 ~ file: views.py ~ user_status ~ request.user: {request.user}")
+        return JsonResponse({"isLoggedIn": True, "firstName": request.user.first_name, "lastName": request.user.last_name})
+    return JsonResponse({"isLoggedIn": False})
 
 
 class SignUpView(generic.CreateView):
@@ -26,6 +57,14 @@ class SignUpView(generic.CreateView):
         logger.error("Form is invalid. Rendering form with errors.")
         logger.error(form.errors)
         return response
+
+
+class CitySearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('search', '')
+        cities = City.objects.filter(name__istartswith=query)
+        serializer = CitySerializer(cities, many=True)
+        return Response(serializer.data)
 
 
 def index(request):

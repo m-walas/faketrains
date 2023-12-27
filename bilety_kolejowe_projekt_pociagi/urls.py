@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth.views import LogoutView, LoginView
 from Bilety_i_pociagi.views import index, SignUpView, search_trains
-from django.urls import include
+#? serializers
+from Bilety_i_pociagi.views import CitySearchView, login_view, logout_view, user_status
 
 
 urlpatterns = [
@@ -27,6 +28,11 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='index'), name="logout"),
-    path('search_trains/', search_trains, name='search_trains'),
     path('admin/', admin.site.urls),
+    #? serializers
+    path('api/cities/', CitySearchView.as_view(), name='city-search'),
+    path('api/search_trains/', search_trains, name='search_trains'),
+    path('api/user/login', login_view, name='login'),
+    path('api/user/logout', logout_view, name='logout'),
+    path('api/user/status', user_status, name='user_status'),
 ]

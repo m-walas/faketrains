@@ -1,30 +1,18 @@
 <template>
-<v-app>
-  <v-app-bar>
-    <v-app-bar-title>
-      <Header></Header>
-    </v-app-bar-title> 
-
-    <HeaderButtons></HeaderButtons>
-    
-  
-  </v-app-bar>
-  <v-main>
-    <router-view />
-  </v-main>
-</v-app>
+  <v-app>
+    <AppBar></AppBar>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
-import Header from "./components/Header.vue";
-import HeaderButtons from "./components/HeaderButtons.vue";
+import AppBar from './components/AppBar.vue';
 
 export default {
-  name: "App",
   components: {
-    Header,
-    HeaderButtons
-  }
-}
-
+    AppBar,
+  },
+};
 </script>

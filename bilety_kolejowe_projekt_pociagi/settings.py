@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'Bilety_i_pociagi',
     'corsheaders',
     'channels',
@@ -75,6 +76,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://faketrains.mwalas.pl",
     "https://django.mwalas.pl",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5000',
