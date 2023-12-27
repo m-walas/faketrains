@@ -7,7 +7,7 @@ import router from './router';
 import vuetify from './plugins/vuetify';
 import { pinia } from './store';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000/';
+axios.defaults.baseURL = 'https://django.mwalas.pl/';
 
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;

@@ -51,7 +51,7 @@ export default {
         return;
       }
       this.isLoadingFrom = true;
-      axios.get(`http://localhost:8000/api/cities/?search=${this.selectedCityFrom}`)
+      axios.get(`/api/cities/?search=${this.selectedCityFrom}`)
         .then(response => {
           this.citiesFrom = response.data.map(city => city.name);
           this.isLoadingFrom = false;
@@ -64,7 +64,7 @@ export default {
 
     fetchCitiesTo() {
       this.isLoadingTo = true;
-      axios.get(`http://localhost:8000/api/cities/?search=${this.selectedCityTo}`)
+      axios.get(`/api/cities/?search=${this.selectedCityTo}`)
         .then(response => {
           this.citiesTo = response.data.map(city => city.name);
           this.isLoadingTo = false;
