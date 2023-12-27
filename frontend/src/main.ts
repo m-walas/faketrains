@@ -7,6 +7,7 @@ import router from './router';
 import vuetify from './plugins/vuetify';
 import { pinia } from './store';
 
+// ! EDIT HERE if working locally
 axios.defaults.baseURL = 'https://django.mwalas.pl/';
 
 const app = createApp(App);
