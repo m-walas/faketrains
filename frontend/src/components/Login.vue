@@ -15,6 +15,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
+import router from '../router';
 
 export default {
   setup() {
@@ -30,7 +31,7 @@ export default {
         });
         if (response.data.success) {
           authStore.login(response.data.username, response.data.firstName, response.data.lastName);
-          // Przekierowanie lub inna logika
+          router.push('/');
         } else {
           alert('Błąd logowania: Niepoprawne dane');
         }
