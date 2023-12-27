@@ -6,6 +6,7 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import SeatSelectionView from '../views/SeatSelectionView.vue';
 import RoutesView from '../views/RoutesView.vue';
+import AuthView from '../views/AuthView.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -19,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: LoginView,
   },
+  {
+    path: '/auth',
+    name: 'Login',
+    component: AuthView,
+  },
+  
   {
     path: '/auth/register',
     name: 'Register',
