@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.http import require_POST
 import json
-import datetime
+import datetime as dt
 
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 from .serializers import CitySerializer
@@ -110,8 +110,8 @@ def receive_selected_route(request):
 
 def get_train_seats_with_availability(request, train_id, departure_date, departure_time):
     try:
-        departure_date = datetime.datetime.strptime(departure_date, '%Y-%m-%d').date()
-        departure_time = datetime.datetime.strptime(departure_time, '%H:%M:%S').time()
+        departure_date = dt.datetime.strptime(departure_date, '%Y-%m-%d').date()
+        departure_time = dt.datetime.strptime(departure_time, '%H:%M:%S').time()
 
         train = Train.objects.get(train_id=train_id)
         schedule = Schedule.objects.get(train=train, departure_time=departure_time)

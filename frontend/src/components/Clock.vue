@@ -4,6 +4,21 @@
   </div>
 </template>
 
+
+<style scoped>
+.clock {
+  font-family: 'Roboto', 'Arial', sans-serif;
+  color: #333;
+  background-color: transparent;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+  font-size: 1.3rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+</style>
+
+
 <script>
 export default {
   data() {
@@ -27,16 +42,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.clock {
-  font-family: 'Arial', sans-serif;
-  color: #333;
-  background-color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  font-size: 1.2rem;
-}
-</style>

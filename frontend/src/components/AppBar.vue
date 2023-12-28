@@ -30,8 +30,43 @@
   <v-snackbar v-model="snackbarVisible" color="success" top>
     Wylogowano pomyślnie
   </v-snackbar>
-
 </template>
+
+
+<style scoped>
+.app-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.app-bar-title {
+  font-family: 'Segoe UI', sans-serif;
+  cursor: pointer;
+  font-size: 2rem;
+  transition: color 0.3s ease;
+}
+
+.app-bar-title:hover {
+  color: #1258A7;
+}
+
+.user-info {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.v-btn {
+  margin-left: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.v-btn:hover {
+  transform: scale(1.1);
+}
+</style>
+
 
 <script lang="ts">
 import Clock from './Clock.vue';
@@ -76,24 +111,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.app-bar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.app-bar-title {
-  font-family: 'Segoe UI', sans-serif;
-  cursor: pointer;
-  font-size: 2rem;
-}
-
-.user-info {
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-</style>
