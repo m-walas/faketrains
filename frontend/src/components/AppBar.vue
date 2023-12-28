@@ -61,7 +61,7 @@ export default {
     };
 
     const toggleTheme = () => {
-      // TODO: implement
+      // TODO: do implement
     };
 
     const handleLogout = () => {
