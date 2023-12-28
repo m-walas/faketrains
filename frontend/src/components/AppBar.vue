@@ -61,7 +61,7 @@ export default {
     };
 
     const toggleTheme = () => {
-      // Logika przełączania motywu
+      // TODO: implement
     };
 
     const handleLogout = () => {
