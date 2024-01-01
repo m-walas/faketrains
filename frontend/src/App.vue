@@ -14,6 +14,16 @@
 
 
 <style scoped>
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.v-main {
+  flex: 1;
+}
+
 .fade-zoom-enter-active, .fade-zoom-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }

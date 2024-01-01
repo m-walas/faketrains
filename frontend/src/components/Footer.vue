@@ -18,8 +18,6 @@
   color: #333;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
   font-size: 0.9rem;
-  position: absolute;
-  bottom: 0;
   width: 100%;
 }
 </style>
