@@ -39,20 +39,28 @@ def logout_view(request):
 
 @api_view(['POST'])
 def register_view(request):
-    first_name = request.data.get('firstName')
-    last_name = request.data.get('lastName')
-    email = request.data.get('email')
-    password = request.data.get('password')
-    second_password = request.data.get('secondPassword')
+    # first_name = request.data.get('firstName')
+    # last_name = request.data.get('lastName')
+    # email = request.data.get('email')
+    # password = request.data.get('password')
+    # second_password = request.data.get('secondPassword')
 
-    if password != second_password:
-        return JsonResponse({"success": False, "error": "Passwords do not match"}, status=400)
+    # if password != second_password:
+    #     return JsonResponse({"success": False, "error": "Passwords do not match"}, status=400)
 
-    try:
-        CustomUserCreationForm.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
+    # try:
+    #     CustomUserCreationForm.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
+    #     return JsonResponse({"success": True})
+    # except Exception as e:
+    #     return JsonResponse({"success": False, "error": str(e)}, status=400)
+    
+    form = CustomUserCreationForm(request.data)
+
+    if form.is_valid():
+        form.save()
         return JsonResponse({"success": True})
-    except Exception as e:
-        return JsonResponse({"success": False, "error": str(e)}, status=400)
+    else:
+        return JsonResponse({"success": False, "error": form.errors.as_json()}, status=400)
 
 
 @api_view(['GET'])

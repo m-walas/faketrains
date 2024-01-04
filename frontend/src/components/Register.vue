@@ -110,8 +110,8 @@ export default {
       ],
       lastNameRules: [
         v => !!v || 'Nazwisko jest wymagane',
-        v=> v?.length >= 2 || 'Imię nie może mieć mniej niż 2 znaki',
-        v => v?.length <= 50 || 'Imię nie może być dłuższe niż 50 znaków'
+        v=> v?.length >= 2 || 'Nazwisko nie może mieć mniej niż 2 znaki',
+        v => v?.length <= 50 || 'Nazwisko nie może być dłuższe niż 50 znaków'
       ],
       emailRules: [
         v => !!v || 'E-mail jest wymagany',
@@ -136,10 +136,13 @@ export default {
           firstName: this.firstName,
           lastName: this.lastName,
           email: this.email, 
-          password: this.password
+          password1: this.password,
+          password2: this.confirmPassword
         });
       } catch (error) {
-        console.log(error)
+        console.log('Error status:', error.response.status);
+        console.log('Error data:', error.response.data);
+        console.log('Error headers:', error.response.headers);
       }
     }
   }
