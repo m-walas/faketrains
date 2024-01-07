@@ -1,6 +1,5 @@
 **/__pycache__
 **/.DS_Store
-**/.env
 **/.git
 **/.gitignore
 **/.vscode
@@ -14,7 +13,6 @@ docker-compose.yml
 *.pyo
 *.pyd
 .Python
-.env
 .venv
 .git
 .gitignore
