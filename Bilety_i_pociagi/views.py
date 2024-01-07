@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.http import require_POST
 import json
@@ -49,6 +49,7 @@ def logout_view(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register_view(request):
     form = CustomUserCreationForm(request.data)
 
