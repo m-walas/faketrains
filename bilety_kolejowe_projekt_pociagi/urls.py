@@ -1,25 +1,10 @@
-"""
-URL configuration for bilety_kolejowe_projekt_pociagi project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView, LoginView
-from Bilety_i_pociagi.views import index, SignUpView, search_trains
+from Bilety_i_pociagi.views import ListAPIEndpoints, index, SignUpView, search_trains
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 #? serializers
-from Bilety_i_pociagi.views import CitySearchView, login_view, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
+from Bilety_i_pociagi.views import CitySearchView, user_profile, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
 
 
 urlpatterns = [
@@ -29,13 +14,17 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='index'), name="logout"),
     path('admin/', admin.site.urls),
+    path('endpoints/', ListAPIEndpoints.as_view(), name='endpoints'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     #? serializers
     path('api/cities/', CitySearchView.as_view(), name='city-search'),
     path('api/search_trains/', search_trains, name='search_trains'),
-    path('api/user/login', login_view, name='login'),
+    # path('api/user/login', login_view, name='login'),
     path('api/user/register', register_view, name='register'),
     path('api/user/logout', logout_view, name='logout'),
     path('api/user/status', user_status, name='user_status'),
+    path('api/user/profile/', user_profile),
     path('api/receive_route', receive_selected_route, name='receive_selected_route'),
     path('api/get_train_seats_with_availability/<str:train_id>/<str:departure_date>/<str:departure_time>/', get_train_seats_with_availability, name='get_train_seats_with_availability'),
 ]

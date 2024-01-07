@@ -2,7 +2,7 @@
   <v-container fluid class="d-flex flex-column align-center justify-center">
     <v-fade-transition mode="out-in">
       <Login v-if="showLogin"></Login>
-      <Register v-else></Register>
+      <Register v-else @registration-success="handleRegistrationSuccess"></Register>
     </v-fade-transition>
 
     <div class="auth-switch-text">
@@ -52,6 +52,10 @@ export default {
   methods: {
     changeAuthComponent() {
       this.showLogin = !this.showLogin
+    },
+
+    handleRegistrationSuccess() {
+      this.showLogin = true;
     }
   },
 

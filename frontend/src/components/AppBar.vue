@@ -30,6 +30,10 @@
   <v-snackbar v-model="snackbarVisible" color="success" top>
     Wylogowano pomyślnie
   </v-snackbar>
+
+  <v-snackbar v-model="snackbarStore.showMessage" color="success">
+    {{ snackbarStore.messageText }}
+  </v-snackbar>
 </template>
 
 
@@ -73,6 +77,7 @@ import Clock from './Clock.vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
+import { useSnackbarStore } from '@/store/snackbarStore'
 
 export default {
   components: {
@@ -82,6 +87,7 @@ export default {
     const router = useRouter();
     const authStore = useAuthStore();
     const snackbarVisible = ref(false);
+    const snackbarStore = useSnackbarStore();
 
     const goToHome = () => {
       router.push('/');
@@ -107,7 +113,7 @@ export default {
       }, 2000);
     };
 
-    return { authStore, goToHome, goToProfile, login, toggleTheme, snackbarVisible, handleLogout };
+    return { authStore, goToHome, goToProfile, login, toggleTheme, snackbarVisible, handleLogout, snackbarStore };
   },
 };
 </script>

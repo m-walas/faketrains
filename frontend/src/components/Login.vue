@@ -1,8 +1,11 @@
 <template>
   <v-card class="pa-4 login-card">
     <v-card-text class="text-h3 mb-8 text-center">Logowanie</v-card-text>
+    <v-alert v-if="showAlert" type="error" class="mb-3" :value="true" v-model="showAlert">
+      {{ errorMessage }}
+    </v-alert>
     <v-form v-on:keydown.enter="submitForm">
-      <v-text-field class="input-field mb-3" v-model="email" label="Email" outlined dense></v-text-field>
+      <v-text-field class="input-field mb-3" v-model="email" label="Email" :rules="emailRules" outlined dense></v-text-field>
       <v-text-field class="input-field mb-5" v-model="password" label="Hasło" type="password" outlined dense></v-text-field>
       <v-row class="ma-1" justify="end">
         <v-btn class="login-btn" @click="submitForm" color="primary" depressed> Zaloguj </v-btn>
@@ -48,32 +51,54 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
 import router from '../router';
+import { useSnackbarStore } from '@/store/snackbarStore';
 
 export default {
   setup() {
     const email = ref('');
+    const emailRules = [
+    v => !!v || 'Email jest wymagany',
+      v => /.+@.+\..+/.test(v) || 'Podaj prawidłowy adres email',
+    ];
     const password = ref('');
     const authStore = useAuthStore();
+    const showAlert = ref(false);
+    const errorMessage = ref('');
+    const snackbarStore = useSnackbarStore();
 
     const submitForm = async () => {
       try {
-        const response = await axios.post('/api/user/login', {
+        const response = await axios.post('/api/token/', {
           username: email.value,
           password: password.value
         });
-        if (response.data.success) {
-          authStore.login(response.data.username, response.data.firstName, response.data.lastName);
+        if (response.data.access && response.data.refresh) {
+          authStore.login(response.data.access, response.data.refresh);
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access;
+          const userInfoResponse = await axios.get('/api/user/profile/');
+          authStore.updateUserInfo(
+            userInfoResponse.data.firstName,
+            userInfoResponse.data.lastName,
+          );
+          snackbarStore.triggerMessage('Zalogowano pomyślnie');
           router.push('/');
         } else {
-          alert('Błąd logowania: Niepoprawne dane');
+          errorMessage.value = 'Błąd logowania: Niepoprawne dane';
+          showAlert.value = true;
         }
       } catch (error) {
-        console.error('Błąd połączenia z serwerem:', error);
-        alert('Błąd połączenia z serwerem');
+        if (error.response && error.response.data.error) {
+          errorMessage.value = error.response.data.error;
+          showAlert.value = true;
+        } else {
+          console.error('Błąd połączenia z serwerem:', error);
+          errorMessage.value = 'Błąd połączenia z serwerem';
+          showAlert.value = true;
+        }
       }
     };
 
-    return { email, password, submitForm };
+    return { email, password, submitForm, errorMessage, showAlert, emailRules };
   }
 };
 </script>

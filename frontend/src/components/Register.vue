@@ -5,7 +5,7 @@
       <v-text-field
         class="input-field-register"
         density="compact"
-        v-model="firstName"
+        v-model="first_name"
         :rules="firstNameRules"
         label="Imię"
         type="text"
@@ -15,7 +15,7 @@
       <v-text-field
         class="input-field-register"
         density="compact"
-        v-model="lastName"
+        v-model="last_name"
         :rules="lastNameRules"
         label="Nazwisko"
         type="text"
@@ -35,8 +35,8 @@
       <v-text-field
         class="input-field-register"
         density="compact"
-        v-model="password"
-        :rules="passwordRules"
+        v-model="password1"
+        :rules="passwordRules1"
         label="Hasło"
         type="password"
         required
@@ -45,8 +45,8 @@
       <v-text-field
         class="input-field-register"
         density="compact"
-        v-model="confirmPassword"
-        :rules="confirmPasswordRules"
+        v-model="password2"
+        :rules="passwordRules2"
         label="Powtórz hasło"
         type="password"
         required
@@ -84,7 +84,7 @@
   }
 
   .register-btn:hover {
-    background-color: #3b82f6; /* Zmiana koloru dla hover */
+    background-color: #3b82f6;
     transform: translateY(-2px);
   }
 </style>
@@ -92,15 +92,16 @@
 
 <script lang="ts">
 import axios from 'axios';
+import { useSnackbarStore } from '../store/snackbarStore';
 
 export default {
   data() {
     return {
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
-      password: '',
-      confirmPassword: '',
+      password1: '',
+      password2: '',
 
       valid: false,
       firstNameRules: [
@@ -117,28 +118,45 @@ export default {
         v => !!v || 'E-mail jest wymagany',
         v => /.+@.+\..+/.test(v) || 'E-mail musi mieć prawidłowy format'
       ],
-      passwordRules: [
+      passwordRules1: [
         v => !!v || 'Hasło jest wymagane',
         v =>v?.length >= 8 || 'Hasło musi mięć conajmniej 8 znaków'
       ],
-      confirmPasswordRules: [
+      passwordRules2: [
         v => !!v || 'Hasło jest wymagane',
         v =>v?.length >= 8 || 'Hasło musi mięć conajmniej 8 znaków',
-        v => v == this.password || 'Hasła nie pasują'
+        v => v == this.password1 || 'Hasła nie pasują'
       ],
     };
   },
 
+  setup() {
+    const snackbarStore = useSnackbarStore();
+
+    return { snackbarStore }
+  },
+
   methods: {
     async submitForm() {
+      if (!this.valid) {
+        return;
+      }
+
       try {
         const resp = await axios.post('/api/user/register', {
-          firstName: this.firstName,
-          lastName: this.lastName,
+          first_name: this.first_name,
+          last_name: this.last_name,
           email: this.email, 
-          password1: this.password,
-          password2: this.confirmPassword
+          password1: this.password1,
+          password2: this.password2
         });
+
+        if (resp.data.success) {
+          this.snackbarStore.triggerMessage('Konto zostało prawidłowo utworzone.');
+          this.$emit('registration-success');
+        } else {
+          console.log('Error data:', resp.data);
+        }
       } catch (error) {
         console.log('Error status:', error.response.status);
         console.log('Error data:', error.response.data);

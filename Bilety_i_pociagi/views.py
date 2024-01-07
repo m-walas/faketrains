@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm
@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.http import require_POST
 import json
 import datetime as dt
@@ -18,17 +19,27 @@ from .serializers import CitySerializer
 
 from logger import colored_logger as logger
 
+# ! backup - do not delete
+# @api_view(['POST'])
+# def login_view(request):
+#     username = request.data.get('username')
+#     password = request.data.get('password')
+#     user = authenticate(username=username, password=password)
+#     if user is not None:
+#         login(request, user)
+#         return JsonResponse({"success": True, "firstName": user.first_name, "lastName": user.last_name, "username": user.username})
+#     else:
+#         return JsonResponse({"success": False, "error": "Błędne dane logowania"}, status=401)
 
-@api_view(['POST'])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return JsonResponse({"success": True, "firstName": user.first_name, "lastName": user.last_name, "username": user.username})
-    else:
-        return JsonResponse({"success": False, "error": "Invalid credentials"}, status=401)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    user = request.user
+    return Response({
+        "firstName": user.first_name,
+        "lastName": user.last_name,
+    })
 
 
 @api_view(['POST'])
@@ -39,21 +50,6 @@ def logout_view(request):
 
 @api_view(['POST'])
 def register_view(request):
-    # first_name = request.data.get('firstName')
-    # last_name = request.data.get('lastName')
-    # email = request.data.get('email')
-    # password = request.data.get('password')
-    # second_password = request.data.get('secondPassword')
-
-    # if password != second_password:
-    #     return JsonResponse({"success": False, "error": "Passwords do not match"}, status=400)
-
-    # try:
-    #     CustomUserCreationForm.objects.create_user(username=email, email=email, password=password, first_name=first_name, last_name=last_name)
-    #     return JsonResponse({"success": True})
-    # except Exception as e:
-    #     return JsonResponse({"success": False, "error": str(e)}, status=400)
-    
     form = CustomUserCreationForm(request.data)
 
     if form.is_valid():
@@ -69,6 +65,17 @@ def user_status(request):
         logger.debug(f"🚀 ~ file: views.py ~ user_status ~ request.user: {request.user}")
         return JsonResponse({"isLoggedIn": True, "firstName": request.user.first_name, "lastName": request.user.last_name})
     return JsonResponse({"isLoggedIn": False})
+
+
+class ListAPIEndpoints(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, format=None):
+        urlconf = get_resolver()
+        all_urls = list()
+        for url_pattern in urlconf.url_patterns:
+            all_urls.append(url_pattern.pattern.describe())
+        return Response(all_urls)
 
 
 class SignUpView(generic.CreateView):
