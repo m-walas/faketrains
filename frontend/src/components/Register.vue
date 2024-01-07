@@ -149,7 +149,7 @@ export default {
           email: this.email, 
           password1: this.password1,
           password2: this.password2
-        });
+        }, { headers: { 'Authorization': '' } });
 
         if (resp.data.success) {
           this.snackbarStore.triggerMessage('Konto zostało prawidłowo utworzone.');
