@@ -1,15 +1,15 @@
 <template>
   <v-container>
-    <SearchForm></SearchForm>
+    <Routes></Routes>
   </v-container>
 </template>
   
 <script lang="ts">
-import SearchForm from "../components/SearchTripForm.vue";
+import Routes from "../components/Routes.vue";
 
 export default {
   components: {
-    SearchForm,
+    Routes,
   },
 };
 </script>
