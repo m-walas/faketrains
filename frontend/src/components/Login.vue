@@ -2,19 +2,18 @@
   <v-card class="pa-4 login-card">
     <v-card-text class="text-h3 mb-8 text-center">Logowanie</v-card-text>
     
-    <v-form v-on:keydown.enter="submitForm">
+    <v-form v-on:keydown.enter="submitForm" v-model="valid">
       <v-text-field class="input-field mb-3" v-model="email" label="Email" :rules="emailRules" outlined dense></v-text-field>
-      <v-text-field class="input-field mb-3" v-model="password" label="Hasło" type="password" outlined dense></v-text-field>
+      <v-text-field class="input-field mb-3" v-model="password" label="Hasło" type="password" :rules="passwordRules" outlined dense></v-text-field>
       <v-alert v-if="showAlert" type="error"  variant="outlined" icon="$info" class="mb-3 mx-auto" style="max-width: 260px" :value="true" v-model="showAlert">
-      {{ errorMessage }}
+        {{ errorMessage }}
       </v-alert>
       <v-row class="ma-1" justify="end">
-        <v-btn class="login-btn" @click="submitForm" color="primary" depressed> Zaloguj </v-btn>
+        <v-btn class="login-btn" @click="submitForm" color="primary" :disabled="!valid" depressed> Zaloguj  </v-btn>
       </v-row>
     </v-form>
   </v-card>
 </template>
-
 
 <style scoped>
 .login-card {
@@ -46,8 +45,7 @@
 }
 </style>
 
-
-<script lang="ts">
+<script>
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { ref } from 'vue';
@@ -55,25 +53,31 @@ import router from '../router';
 import { useSnackbarStore } from '@/store/snackbarStore';
 
 export default {
-  setup() {
-    const email = ref('');
-    const emailRules = [
-    v => !!v || 'Email jest wymagany',
-      v => /.+@.+\..+/.test(v) || 'Podaj prawidłowy adres email',
-    ];
-    const password = ref('');
-    const authStore = useAuthStore();
-    const showAlert = ref(false);
-    const errorMessage = ref('');
-    const snackbarStore = useSnackbarStore();
-
-    const submitForm = async () => {
+  data() {
+    return {
+      email: '',
+      password: '',
+      showAlert: false,
+      errorMessage: '',
+      valid: false,
+      emailRules: [
+        v => !!v || 'Email jest wymagany',
+        v => /.+@.+\..+/.test(v) || 'Podaj prawidłowy adres email',
+      ],
+      passwordRules: [
+        v => !!v || 'Hasło jest wymagane',
+      ],
+    };
+  },
+  methods: {
+    async submitForm() {
       try {
         const response = await axios.post('/api/token/', {
-          username: email.value,
-          password: password.value
+          username: this.email,
+          password: this.password,
         });
         if (response.data.access && response.data.refresh) {
+          const authStore = useAuthStore();
           authStore.login(response.data.access, response.data.refresh);
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access;
           const userInfoResponse = await axios.get('/api/user/profile/');
@@ -81,25 +85,24 @@ export default {
             userInfoResponse.data.firstName,
             userInfoResponse.data.lastName,
           );
+          const snackbarStore = useSnackbarStore();
           snackbarStore.triggerMessage('Zalogowano pomyślnie');
           router.push('/');
         } else {
-          errorMessage.value = 'Błąd logowania: Niepoprawne dane';
-          showAlert.value = true;
+          this.errorMessage = 'Niepoprawne dane';
+          this.showAlert = true;
         }
       } catch (error) {
-        if (error.response && error.response.data.error) {
-          errorMessage.value = error.response.data.error;
-          showAlert.value = true;
+        if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+          this.errorMessage = 'Niepoprawne dane';
+          this.showAlert = true;
         } else {
-          console.error('Błąd połączenia z serwerem:', error);
-          errorMessage.value = 'Błąd połączenia z serwerem';
-          showAlert.value = true;
+          console.error('Error:', error);
+          this.errorMessage = 'Błąd połączenia z serwerem';
+          this.showAlert = true;
         }
       }
-    };
-
-    return { email, password, submitForm, errorMessage, showAlert, emailRules };
-  }
+    },
+  },
 };
 </script>
