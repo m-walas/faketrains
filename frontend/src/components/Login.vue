@@ -1,12 +1,13 @@
 <template>
   <v-card class="pa-4 login-card">
     <v-card-text class="text-h3 mb-8 text-center">Logowanie</v-card-text>
-    <v-alert v-if="showAlert" type="error" class="mb-3" :value="true" v-model="showAlert">
-      {{ errorMessage }}
-    </v-alert>
+    
     <v-form v-on:keydown.enter="submitForm">
       <v-text-field class="input-field mb-3" v-model="email" label="Email" :rules="emailRules" outlined dense></v-text-field>
-      <v-text-field class="input-field mb-5" v-model="password" label="Hasło" type="password" outlined dense></v-text-field>
+      <v-text-field class="input-field mb-3" v-model="password" label="Hasło" type="password" outlined dense></v-text-field>
+      <v-alert v-if="showAlert" type="error"  variant="outlined" icon="$info" class="mb-3 mx-auto" style="max-width: 260px" :value="true" v-model="showAlert">
+      {{ errorMessage }}
+      </v-alert>
       <v-row class="ma-1" justify="end">
         <v-btn class="login-btn" @click="submitForm" color="primary" depressed> Zaloguj </v-btn>
       </v-row>

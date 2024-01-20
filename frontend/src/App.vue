@@ -38,11 +38,31 @@
 <script lang="ts">
 import AppBar from './components/AppBar.vue';
 import Footer from './components/Footer.vue';
+import { useAuthStore } from './store/authStore';
+import router from './router';
 
 export default {
+  data() {
+    return {
+      authStore: useAuthStore()
+    };
+  },
   components: {
     AppBar,
     Footer,
+  },
+  watch: {
+    $route: async function (to, from) {
+      
+       
+      if (this.authStore.isAuthenticated) {
+        if (to.name === "auth") {
+          return; 
+        } else {
+          return router.push("/");
+        }
+      }
+    },
   },
 };
 </script>

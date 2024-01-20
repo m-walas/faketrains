@@ -161,7 +161,7 @@ export default {
           this.snackbarStore.triggerMessage('Konto zostało prawidłowo utworzone.');
           this.$emit('registration-success');
         } else {
-          this.serverErrors[0] = "Błąd z serwer, spróbuj ponownie później."
+          this.serverErrors[0] = "Błąd z serwerem, spróbuj ponownie później."
         }
       } catch (error) {
         if (error.response && error.response.status) {
@@ -174,7 +174,7 @@ export default {
             }
           }
         } else {
-          this.serverErrors[0] = "Błąd z serwer, spróbuj ponownie później."
+          this.serverErrors[0] = "Błąd z serwerem, spróbuj ponownie później."
         }
       }
     }

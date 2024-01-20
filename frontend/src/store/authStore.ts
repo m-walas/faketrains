@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-interface AuthState {
+export interface AuthState {
   isLoggedIn: boolean;
   firstName: string;
   lastName: string;
