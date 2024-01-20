@@ -1,6 +1,7 @@
 <template>
   <v-card class="pa-4 register-card">
     <v-card-text class="text-h3 mb-8 text-center"> Rejestracja </v-card-text>
+    
     <v-form v-on:keydown.enter="submitForm" v-model="valid">
       <v-text-field
         class="input-field-register"
@@ -52,6 +53,14 @@
         required
       >
       </v-text-field>
+      <v-alert v-if="this.serverErrors[0]"
+      color="error"
+      variant="outlined"
+      icon="$info"
+      :text=this.serverErrors[0]
+      class="mx-auto mb-6"
+      style="max-width: 260px"
+      ></v-alert>
       <v-row class="ma-1" justify="end" style="max-width: 100%">
         <v-btn class="register-btn" @click="submitForm" color="blue" :disabled="!valid">
           Zarejestruj
@@ -102,6 +111,8 @@ export default {
       email: '',
       password1: '',
       password2: '',
+      snackbarStore: useSnackbarStore(),
+      serverErrors: [],
 
       valid: false,
       firstNameRules: [
@@ -130,17 +141,12 @@ export default {
     };
   },
 
-  setup() {
-    const snackbarStore = useSnackbarStore();
-
-    return { snackbarStore }
-  },
-
   methods: {
     async submitForm() {
       if (!this.valid) {
         return;
       }
+      this.serverErrors = []
 
       try {
         const resp = await axios.post('/api/user/register', {
@@ -155,12 +161,21 @@ export default {
           this.snackbarStore.triggerMessage('Konto zostało prawidłowo utworzone.');
           this.$emit('registration-success');
         } else {
-          console.log('Error data:', resp.data);
+          this.serverErrors[0] = "Błąd z serwer, spróbuj ponownie później."
         }
       } catch (error) {
-        console.log('Error status:', error.response.status);
-        console.log('Error data:', error.response.data);
-        console.log('Error headers:', error.response.headers);
+        if (error.response && error.response.status) {
+          console.log(error.response.data)
+          const errorData = JSON.parse(error.response.data.error || '{}');
+          for (const fieldName in errorData) {
+            if (errorData.hasOwnProperty(fieldName) && Array.isArray(errorData[fieldName])) {
+              const firstErrorMessage = errorData[fieldName][0].message;
+              this.serverErrors.push(firstErrorMessage)
+            }
+          }
+        } else {
+          this.serverErrors[0] = "Błąd z serwer, spróbuj ponownie później."
+        }
       }
     }
   }
