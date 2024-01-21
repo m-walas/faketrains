@@ -4,9 +4,11 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class TrainSeatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("WebSocket connected")
         await self.accept()
 
     async def disconnect(self, close_code):
+        print(f"WebSocket disconnected with code: {close_code}")
         pass
 
     async def receive(self, text_data):
