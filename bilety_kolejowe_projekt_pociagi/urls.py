@@ -4,7 +4,7 @@ from django.contrib.auth.views import LogoutView, LoginView
 from Bilety_i_pociagi.views import ListAPIEndpoints, index, SignUpView, search_trains
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 #? serializers
-from Bilety_i_pociagi.views import CitySearchView, user_profile, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
+from Bilety_i_pociagi.views import city_search_view, user_profile, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
 
 
 urlpatterns = [
@@ -18,7 +18,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     #? serializers
-    path('api/cities/', CitySearchView.as_view(), name='city-search'),
+    path('api/cities/', city_search_view, name='city-search'),
     path('api/search_trains/', search_trains, name='search_trains'),
     # path('api/user/login', login_view, name='login'),
     path('api/user/register', register_view, name='register'),

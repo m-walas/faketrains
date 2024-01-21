@@ -1,5 +1,6 @@
 <template>
   <div class="clock">
+    <font-awesome-icon icon="clock" />
     <span>{{ time }}</span>
   </div>
 </template>
@@ -15,6 +16,16 @@
   display: inline-block;
   font-size: 1.3rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.clock .fa-clock {
+  margin-right: 10px;
+  color: #3d73da;
+}
+
+.clock:hover {
+  background-color: #eaeaea;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 </style>
 

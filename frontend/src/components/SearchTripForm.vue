@@ -9,22 +9,26 @@
           <v-divider></v-divider>
 
           <v-card-text>
-            <v-autocomplete
-              class="autocomplete-field"
-              :items="citiesFrom"
-              label="Skąd"
+            <Multiselect
+              class = "autocomplete-field"
               v-model="selectedCityFrom"
-              @input="fetchCitiesFrom"
-              :loading="isLoadingFrom"
-            ></v-autocomplete>
-            <v-autocomplete
-              class="autocomplete-field"
-              :items="citiesTo"
-              label="Dokąd"
+              :options="cities"
+              placeholder="Wybierz miasto początkowe"
+              label="name"
+              track-by="name"
+              :searchable="true"
+              @update:modelValue="handleCityFromChange"
+            />
+            <Multiselect
+              class = "autocomplete-field"
               v-model="selectedCityTo"
-              @input="fetchCitiesTo"
-              :loading="isLoadingTo"
-            ></v-autocomplete>
+              :options="cities"
+              placeholder="Wybierz miasto docelowe"
+              label="name"
+              track-by="name"
+              :searchable="true"
+              @update:modelValue="handleCityToChange"
+            />
           </v-card-text>
 
           <v-divider></v-divider>
@@ -82,7 +86,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 24px;
@@ -98,110 +102,85 @@
 }
 
 .autocomplete-field, .date-field {
-  width: 100%;
-  max-width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   min-width: 250px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
 }
 
 .autocomplete-field:hover, .date-field:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.v-autocomplete .v-label, .v-text-field .v-label {
-  transition: all 0.3s ease;
+.autocomplete-field:focus, .date-field:focus {
+  border-color: #3d73da;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.v-autocomplete:focus-within .v-label, .v-text-field:focus-within .v-label {
+.v-autocomplete-field:focus-within .v-label, .v-text-field:focus-within .v-label {
   transform: translateX(10px);
 }
 
 .v-btn {
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .v-btn:hover {
-  background-color: #4f8bf9;
+  background-color: #3d73da;
   transform: scale(1.05);
 }
 </style>
 
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted, watchEffect } from 'vue';
 import axios from 'axios';
-import debounce from 'lodash/debounce';
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
 import { useRoutesStore } from '../store/routes';
 
-export default {
+export default defineComponent({
+  components: { Multiselect },
   data() {
     return {
-      citiesFrom: [],
-      citiesTo: [],
-      selectedCityFrom: '',
-      selectedCityTo: '',
+      cities: [],
+      selectedCityFrom: null,
+      selectedCityTo: null,
       selectedDate: '',
-      isLoadingFrom: false,
-      isLoadingTo: false,
-      canSearch: false,
       noRoutesDialog: false,
+      canSearch: false,
     };
   },
-  created() {
-    this.debouncedFetchCitiesFrom = debounce(this.fetchCitiesFrom, 500);
-    this.debouncedFetchCitiesTo = debounce(this.fetchCitiesTo, 500);
-  },
-  watch: {
-    selectedCityFrom(newVal) {
-      this.debouncedFetchCitiesFrom(newVal);
-      this.updateCanSearch();
-    },
-    selectedCityTo(newVal) {
-      this.debouncedFetchCitiesTo(newVal);
-      this.updateCanSearch();
-    },
-    selectedDate() {
-      this.updateCanSearch();
-    },
-  },
   methods: {
-    fetchCitiesFrom() {
-      if (this.selectedCityFrom === null) {
-        this.citiesFrom = [];
-        return;
-      }
-      this.isLoadingFrom = true;
-      axios.get(`/api/cities/?search=${this.selectedCityFrom}`)
-        .then(response => {
-          this.citiesFrom = response.data.map(city => city.name);
-          this.isLoadingFrom = false;
-        })
-        .catch(error => {
-          console.error('Błąd:', error);
-          this.isLoadingFrom = false;
+    async loadCities() {
+      try {
+        const response = await axios.get('/api/cities/');
+        const citiesData = response.data.cities;
+        citiesData.forEach(city => {
+          // console.log("załadowane miasto: ", city);
+          this.cities = citiesData;
         });
+      } catch (error) {
+        console.error('Błąd podczas pobierania miast:', error);
+      }
     },
-    fetchCitiesTo() {
-      if (this.selectedCityTo === null) {
-        this.citiesTo = [];
-        return;
-      }
-      this.isLoadingTo = true;
-      axios.get(`/api/cities/?search=${this.selectedCityTo}`)
-        .then(response => {
-          this.citiesTo = response.data.map(city => city.name);
-          this.isLoadingTo = false;
-        })
-        .catch(error => {
-          console.error('Błąd:', error);
-          this.isLoadingTo = false;
-        });
+    handleCityFromChange(value) {
+      this.selectedCityFrom = value;
+    },
+    handleCityToChange(value) {
+      this.selectedCityTo = value;
     },
     search() {
+      // console.log("selectedCityFrom.value: ", this.selectedCityFrom);
+      // console.log("selectedCityTo.value: ", this.selectedCityTo);
+
       if (this.selectedCityFrom && this.selectedCityTo && this.selectedDate) {
         const apiUrl = `/api/search_trains/?from=${encodeURIComponent(this.selectedCityFrom)}&to=${encodeURIComponent(this.selectedCityTo)}&date=${encodeURIComponent(this.selectedDate)}`;
-
         axios.get(apiUrl)
           .then(response => {
             const routesStore = useRoutesStore();
@@ -209,7 +188,7 @@ export default {
               this.noRoutesDialog = true;
             } else {
               routesStore.setSchedules(response.data.schedules);
-              console.log("Zapisane trasy w store:", routesStore.schedules);
+              // console.log("Zapisane trasy w store:", routesStore.schedules);
               this.$router.push('/routes');
             }
           })
@@ -221,8 +200,14 @@ export default {
       }
     },
     updateCanSearch() {
-      this.canSearch = this.selectedCityFrom && this.selectedCityTo && this.selectedDate;
+      this.canSearch = this.selectedCityFrom !== null && this.selectedCityTo !== null && this.selectedDate !== '';
     },
   },
-};
+  mounted() {
+    this.loadCities();
+    watchEffect(() => {
+      this.updateCanSearch();
+    });
+  },
+});
 </script>

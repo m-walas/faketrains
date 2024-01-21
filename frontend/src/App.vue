@@ -12,7 +12,6 @@
   </v-app>
 </template>
 
-
 <style scoped>
 #app {
   display: flex;
@@ -24,27 +23,28 @@
   flex: 1;
 }
 
-.fade-zoom-enter-active, .fade-zoom-leave-active {
+.fade-zoom-enter-active,
+.fade-zoom-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.fade-zoom-enter, .fade-zoom-leave-to {
+.fade-zoom-enter,
+.fade-zoom-leave-to {
   opacity: 0;
   transform: scale(0.95);
 }
 </style>
 
-
 <script lang="ts">
-import AppBar from './components/AppBar.vue';
-import Footer from './components/Footer.vue';
-import { useAuthStore } from './store/authStore';
-import router from './router';
+import AppBar from "./components/AppBar.vue";
+import Footer from "./components/Footer.vue";
+import { useAuthStore } from "./store/authStore";
+import router from "./router";
 
 export default {
   data() {
     return {
-      authStore: useAuthStore()
+      authStore: useAuthStore(),
     };
   },
   components: {
@@ -52,13 +52,13 @@ export default {
     Footer,
   },
   watch: {
-    $route: async function (to, from) {
-      
-       
-      if (this.authStore.isAuthenticated) {
-        if (to.name === "Auth") {
-          return router.push("/");
-        }
+    $route(to, from) {
+      if (this.authStore.isAuthenticated && to.path === "/auth") {
+        router.push("/").catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
       }
     },
   },
