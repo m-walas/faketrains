@@ -56,7 +56,7 @@ export default {
       
        
       if (this.authStore.isAuthenticated) {
-        if (to.name === "auth") {
+        if (to.name === "Auth") {
           return router.push("/");
         }
       }
