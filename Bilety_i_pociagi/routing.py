@@ -6,7 +6,7 @@ from django.urls import path
 from .consumers import TrainSeatConsumer
 
 websocket_urlpatterns = [
-    path('ws/train_seat/', TrainSeatConsumer.as_asgi()),
+    path(r'ws/train_seat/', TrainSeatConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

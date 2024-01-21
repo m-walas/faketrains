@@ -19,6 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bilety_kolejowe_projekt_pociagi
 application = get_asgi_application()
 
 application = ProtocolTypeRouter({
+    'http':get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
             routing.websocket_urlpatterns

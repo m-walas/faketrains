@@ -41,6 +41,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'Bilety_i_pociagi',
     'corsheaders',
-    'channels',
     'allauth',
     'allauth.account',
 ]
@@ -140,7 +140,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bilety_kolejowe_projekt_pociagi.wsgi.application'
+ASGI_APPLICATION = 'bilety_kolejowe_projekt_pociagi.asgi.application'
 
 
 # Database
