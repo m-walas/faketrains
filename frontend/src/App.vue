@@ -52,15 +52,13 @@ export default {
     Footer,
   },
   watch: {
-    $route: async function (to, from) {
-      
-       
-      if (this.authStore.isAuthenticated) {
-        if (to.name === "auth") {
-          return; 
-        } else {
-          return router.push("/");
-        }
+    $route(to, from) {
+      if (this.authStore.isAuthenticated && to.path === '/auth') {
+        router.push('/').catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            throw err;
+          }
+        });
       }
     },
   },

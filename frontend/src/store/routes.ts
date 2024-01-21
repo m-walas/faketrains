@@ -1,7 +1,7 @@
 // stores/routes.ts
 import { defineStore } from 'pinia';
 
-interface DirectRoute {
+interface RouteLeg {
   train_id: string;
   departure_city: string;
   departure_time: string;
@@ -9,12 +9,16 @@ interface DirectRoute {
   arrival_time: string;
   ticket_price: string;
   travel_time: string;
-  is_transfer: boolean;
+}
+
+interface DirectRoute extends RouteLeg {
+  is_transfer: false;
 }
 
 interface TransferRoute {
-  first_leg: DirectRoute;
-  second_leg: DirectRoute;
+  is_transfer: true;
+  first_leg: RouteLeg;
+  second_leg: RouteLeg;
 }
 
 type Route = DirectRoute | TransferRoute;

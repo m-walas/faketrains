@@ -6,6 +6,9 @@ import vuetify from './plugins/vuetify';
 import { pinia } from './store';
 import { useAuthStore } from '@/store/authStore';
 import { createPinia } from 'pinia';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 let isTokenBeingRefreshed = false;
 let didTokenRefreshFail = false;
@@ -14,6 +17,8 @@ let didTokenRefreshFail = false;
 // axios.defaults.baseURL = 'http://localhost:8000/';
 axios.defaults.baseURL = 'https://django.mwalas.pl/';
 console.log('axios.defaults.baseURL: ', axios.defaults.baseURL);
+
+library.add(faClock);
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -84,4 +89,5 @@ async function refreshTokenAndRetry() {
 
 app.use(router);
 app.use(vuetify);
+app.component('font-awesome-icon', FontAwesomeIcon);
 app.mount('#app');

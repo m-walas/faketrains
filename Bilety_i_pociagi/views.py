@@ -15,7 +15,6 @@ import json
 import datetime as dt
 
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
-from .serializers import CitySerializer
 
 from logger import colored_logger as logger
 
@@ -96,12 +95,12 @@ class SignUpView(generic.CreateView):
         return response
 
 
-class CitySearchView(APIView):
-    def get(self, request):
-        query = request.query_params.get('search', '')
-        cities = City.objects.filter(name__istartswith=query)
-        serializer = CitySerializer(cities, many=True)
-        return Response(serializer.data)
+@api_view(['GET'])
+@permission_classes([AllowAny])  
+def city_search_view(request):
+    cities = City.objects.all().order_by('name')
+    cities_list = [city.name for city in cities]
+    return JsonResponse({"cities": cities_list})
 
 
 @require_POST
