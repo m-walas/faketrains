@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-interface SnackbarState {
+export interface SnackbarState {
   showMessage: boolean;
   messageText: string;
 }
