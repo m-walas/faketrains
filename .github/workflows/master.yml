@@ -23,6 +23,7 @@ jobs:
         script: |
           cd /home/ubuntu/autodeploy_trains/train-tickets/
           export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+          git fetch
           git pull origin master
           docker-compose down
           docker-compose build
