@@ -22,9 +22,7 @@
       </v-btn>
     </template>
     
-    <v-btn icon @click="toggleTheme">
-      <v-icon>mdi-theme-light-dark</v-icon>
-    </v-btn>
+ 
   </v-app-bar>
 
   <v-snackbar v-model="snackbarVisible" color="success" top>
