@@ -111,6 +111,14 @@ class Ticket(models.Model):
             self.price = ticket_price.price
         super().save(*args, **kwargs)
 
+    @property
+    def departure_city(self):
+        return self.schedule.departure_city
+
+    @property
+    def arrival_city(self):
+        return self.schedule.arrival_city
+    
     def __str__(self):
         train = self.seat.train
         route = train.trainroute_set.first().route
