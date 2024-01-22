@@ -1,35 +1,46 @@
 <template>
-  <div class="train">
-    <div v-for="row in seats" :key="row[0].id" class="seat-row">
-      <div
-        v-for="seat in row"
-        :key="seat.id"
-        @click="handleSeatClick(seat)"
-        :class="{
-          'seat-selected': seat.selected,
-          'seat-reserved': seat.reserved,
-        }"
-      >
-        {{ seat.id }}
-      </div>
-    </div>
-  </div>
-  <v-btn
-    class="confirm-btn mt-5"
-    @click="confirmSeat"
-    color="primary"
-    :disabled="!isAnySeatSelected"
-  >
-    Potwierdź
-  </v-btn>
   <div class="text-center">
-    <v-snackbar v-model="snackbar" :timeout="2000" color="blue-grey">
-      Maksymalna liczba miejsc do zarezerwowania to: {{ this.maxSeatsToSelect }}
-    </v-snackbar>
+    <v-card class="text-center my-4 mx-4" style="border-radius: 50px">
+      <v-card-text class="text-h3 my-4 mx-4 text-center font-weight-bold"
+        >Wybierz miejsce</v-card-text
+      >
+      <div class="d-flex justify-center">
+        <div class="train">
+          <div v-for="row in seats" :key="row[0].id" class="seat-row">
+            <div
+              v-for="seat in row"
+              :key="seat.id"
+              @click="handleSeatClick(seat)"
+              :class="{
+                'seat-selected': seat.selected,
+                'seat-reserved': seat.reserved,
+              }"
+            >
+              {{ seat.id }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <v-btn
+        class="confirm-btn my-4 justify-center"
+        @click="confirmSeat"
+        color="primary"
+        :disabled="!isAnySeatSelected"
+      >
+        Potwierdź
+      </v-btn>
+      <div class="text-center">
+        <v-snackbar v-model="snackbar" :timeout="2000" color="blue-grey">
+          Maksymalna liczba miejsc do zarezerwowania to:
+          {{ this.maxSeatsToSelect }}
+        </v-snackbar>
+      </div>
+    </v-card>
   </div>
 </template>
 
 <script lang="ts">
+import { useButtonStore } from "@/store/buttonStore";
 export default {
   data() {
     const numRows = 2;
@@ -78,6 +89,7 @@ export default {
       const seatNumbers = selectedSeats.map((seat) => seat.id);
 
       this.sendMessage(seatNumbers);
+      useButtonStore().setShowTrainSeats(false);
     },
 
     getSelectedSeats() {
