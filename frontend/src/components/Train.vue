@@ -22,11 +22,14 @@
   >
     Potwierdź
   </v-btn>
+  <div class="text-center">
+    <v-snackbar v-model="snackbar" :timeout="2000" color="blue-grey">
+      Maksymalna liczba miejsc do zarezerwowania to: {{ this.maxSeatsToSelect }}
+    </v-snackbar>
+  </div>
 </template>
 
 <script lang="ts">
-import { transformWithEsbuild } from "vite";
-
 export default {
   data() {
     const numRows = 2;
@@ -45,6 +48,8 @@ export default {
     seats[1][3].reserved = true; //Hardcoded for test
 
     return {
+      snackbar: false,
+      maxSeatsToSelect: 3,
       seats,
       ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
     };
@@ -53,37 +58,53 @@ export default {
     handleSeatClick(seat) {
       console.log("Clicked seat:", seat);
       if (!seat.reserved) {
-        this.seats.forEach((row) =>
-          row.forEach((seat) => (seat.selected = false))
-        );
+        console.log("Clicked seat:", seat);
 
-        seat.selected = !seat.selected;
-        console.log("Selected:", seat.selected);
+        const selectedSeatsCount = this.getSelectedSeatsCount();
+
+        if (seat.selected) {
+          seat.selected = false;
+          console.log("Deselected:", seat.id);
+        } else if (selectedSeatsCount < this.maxSeatsToSelect) {
+          seat.selected = true;
+          console.log("Selected:", seat.id);
+        } else {
+          this.snackbar = true;
+        }
       }
     },
     confirmSeat() {
-      const selectedSeat = this.getSelectedSeat();
-      this.sendMessage(selectedSeat.id, selectedSeat.isReserved);
+      const selectedSeats = this.getSelectedSeats();
+      const seatNumbers = selectedSeats.map((seat) => seat.id);
+
+      this.sendMessage(seatNumbers);
     },
 
-    getSelectedSeat() {
-      for (const row of this.seats) {
-        for (const seat of row) {
+    getSelectedSeats() {
+      // Return an array of currently selected seats
+      return this.seats
+        .flatMap((row) => row.filter((seat) => seat.selected))
+        .sort((a, b) => a.id - b.id);
+    },
+    getSelectedSeatsCount() {
+      // Count the number of currently selected seats
+      let count = 0;
+      this.seats.forEach((row) => {
+        row.forEach((seat) => {
           if (seat.selected) {
-            return seat;
+            count++;
           }
-        }
-      }
-      return null;
+        });
+      });
+      return count;
     },
 
-    sendMessage(seatNumber, isReserved) {
+    sendMessage(seatNumbers) {
       const message = JSON.stringify({
-        seatNumber: seatNumber,
-        isReserved: isReserved,
+        selectedSeatNumbers: seatNumbers,
       });
       this.ws.send(message);
-      console.log(seatNumber);
+      console.log(seatNumbers);
     },
   },
   mounted() {

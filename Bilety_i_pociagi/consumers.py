@@ -13,15 +13,13 @@ class TrainSeatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
 
-        seat_number = text_data_json.get('seatNumber')
+        selected_seat_numbers = text_data_json.get('selectedSeatNumbers', [])
 
-        # await self.send_reserved_seats(reserved_seats)  #trzeba wysłać które są reserved potem ogarne jak to obsłużyć imo nie ma sensu wysyłać z fronta wszystkich miejsc tylko jedno które potwierdził 
-        await self.send(text_data=json.dumps({
-            'message': 'Dane odebrane przez serwer',
-        }))
+        # reserved_seats = #z backendu dostać i wysłać najlepiej jako lista [1, 2, 6, 9] tak jak dostaje selectedSeatNumbers
 
-    async def send_reserved_seats(self, reserved_seats):
-        await self.send(text_data=json.dumps({
-            'reservedSeats': reserved_seats,
-            'message': 'Reserved seats updated by the server',
-        }))
+        # response_data = {
+        #     'message': 'Seats confirmed by the server',
+        #     'reservedSeats': reserved_seats,
+        # }
+
+        # await self.send(text_data=json.dumps(response_data))
