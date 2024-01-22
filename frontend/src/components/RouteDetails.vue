@@ -97,6 +97,7 @@
 
 <script>
 import { useButtonStore } from "@/store/buttonStore";
+import { useTicketStore } from "@/store/ticketStore";
 export default {
   props: {
     route: Object,
@@ -110,7 +111,11 @@ export default {
   methods: {
     selectSeats() {
       useButtonStore().setShowTrainSeats(true);
-      console.log(useButtonStore().getShowTrainSeats);
+    },
+  },
+  watch: {
+    selectedTicketCount(newValue) {
+      useTicketStore().setTicketsCount(newValue);
     },
   },
 };

@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-card class="text-center my-4 mx-4" style="border-radius: 50px">
       <v-card-text class="text-h3 my-4 mx-4 text-center font-weight-bold"
-        >Wybierz miejsce</v-card-text
+        >Wybierz miejsca</v-card-text
       >
       <div class="d-flex justify-center">
         <div class="train">
@@ -25,7 +25,9 @@
         class="confirm-btn my-4 justify-center"
         @click="confirmSeat"
         color="primary"
-        :disabled="!isAnySeatSelected"
+        :disabled="
+          !isAnySeatSelected || getSelectedSeatsCount() != maxSeatsToSelect
+        "
       >
         Potwierdź
       </v-btn>
@@ -41,6 +43,7 @@
 
 <script lang="ts">
 import { useButtonStore } from "@/store/buttonStore";
+import { useTicketStore } from "@/store/ticketStore";
 export default {
   data() {
     const numRows = 2;
@@ -60,7 +63,7 @@ export default {
 
     return {
       snackbar: false,
-      maxSeatsToSelect: 3,
+      maxSeatsToSelect: useTicketStore().getTicketsCount,
       seats,
       ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
     };
@@ -68,9 +71,8 @@ export default {
   methods: {
     handleSeatClick(seat) {
       console.log("Clicked seat:", seat);
-      if (!seat.reserved) {
-        console.log("Clicked seat:", seat);
 
+      if (!seat.reserved) {
         const selectedSeatsCount = this.getSelectedSeatsCount();
 
         if (seat.selected) {
@@ -123,6 +125,12 @@ export default {
     this.ws.onopen = function (event) {
       console.log("Connected");
     };
+    this.$watch(
+      () => useTicketStore().getTicketsCount,
+      (newCount) => {
+        this.maxSeatsToSelect = newCount;
+      }
+    );
   },
   computed: {
     isAnySeatSelected() {
