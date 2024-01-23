@@ -60,7 +60,7 @@ export default {
       snackbar: false,
       maxSeatsToSelect: useTicketStore().getTicketsCount,
       // ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
-      ws: new WebSocket("wss://django.mwalas.pl/ws/train_seat/"),
+      ws: new WebSocket("ws://django.mwalas.pl/ws/train_seat/"),
     };
   },
 
