@@ -83,21 +83,17 @@ export default {
     },
 
     handleSeatClick(seat) {
-      console.log("Clicked seat:", seat);
+        if (seat.is_available || seat.selected) {
+            seat.selected = !seat.selected;
 
-      if (seat.is_available) {
-        const selectedSeatsCount = this.getSelectedSeatsCount();
-
-        if (seat.selected) {
-          seat.selected = false;
-          console.log("Deselected:", seat.seat_number);
-        } else if (selectedSeatsCount < this.maxSeatsToSelect) {
-          seat.selected = true;
-          console.log("Selected:", seat.seat_number);
-        } else {
-          this.snackbar = true;
+            const ticketStore = useTicketStore();
+            ticketStore.setSelectedSeats(
+                this.seats.filter(seat => seat.selected).map(seat => ({
+                    seat_number: seat.seat_number,
+                    passenger: { firstName: '', lastName: '' }
+                }))
+            );
         }
-      }
     },
 
     async confirmSeat() {

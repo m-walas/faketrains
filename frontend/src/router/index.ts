@@ -2,7 +2,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 // Views
 import HomeView from '../views/HomeView.vue';
-import SeatSelectionView from '../views/SeatSelectionView.vue';
 import RoutesView from '../views/RoutesView.vue';
 import AuthView from '../views/AuthView.vue';
 import ProfileView from '../views/ProfileView.vue'
@@ -19,16 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     component: AuthView,
   },
   {
-    path: '/seat-selection',
-    name: 'SeatSelection',
-    component: SeatSelectionView,
-  },
-  {
     path: '/routes',
     name: 'Routes',
     component: RoutesView,
   },
-   {
+  {
     path: '/profile',
     name: 'Profile',
     component: ProfileView,

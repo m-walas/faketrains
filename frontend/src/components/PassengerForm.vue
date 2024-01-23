@@ -39,7 +39,7 @@ import { useTicketStore } from "@/store/ticketStore";
 export default {
     data() {
         return {
-            timeLeft: 45,
+            timeLeft: 120,
             isConfirmed: false,
             isBlinking: false,
         };
@@ -59,7 +59,7 @@ export default {
             return `${minutes}:${seconds.toString().padStart(2, '0')}`;
         },
         reservationMessage() {
-            return this.timeLeft <=15 ? "Czas Twojej rezerwacji zaraz minie." : "Wybrane miejsca są tymczasowo zarezerwowane.";
+            return this.timeLeft <=30 ? "Czas Twojej rezerwacji zaraz minie." : "Wybrane miejsca są tymczasowo zarezerwowane.";
         },
     },
     mounted() {
@@ -69,7 +69,7 @@ export default {
         startTimer() {
             const timerInterval = setInterval(() => {
                 this.timeLeft--;
-                if (this.timeLeft <= 15) {
+                if (this.timeLeft <= 30) {
                     this.isBlinking = true;
                 }
                 if (this.timeLeft <= 0) {
@@ -80,9 +80,22 @@ export default {
         },
         confirmPassengerDetails() {
             const ticketStore = useTicketStore();
-            // Logika potwierdzenia danych pasażera
-            // Możesz tutaj wywołać API, aby zaktualizować status miejsc
-        }
+
+            const selectedSeats = this.selectedSeats.map(seat => seat.seat_number);
+            // Wywołaj API do aktualizacji rezerwacji zamiast tworzenia nowej
+            axios.post('/api/update_reservation/', {
+                trainId: this.trainId,
+                departureDate: this.departureDate,
+                departureTime: this.departureTime,
+                seats: selectedSeats
+            })
+            .then(response => {
+                // Obsłuż odpowiedź - np. pokaż wiadomość o powodzeniu
+            })
+            .catch(error => {
+                // Obsłuż błąd
+            });
+        },
     },
     watch: {
         selectedTicketCount(newCount) {

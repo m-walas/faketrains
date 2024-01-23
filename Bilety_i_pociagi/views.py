@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import login, authenticate, logout
-from django.utils import timezone
 from .forms import CustomUserCreationForm
 from django.http import JsonResponse
+from django_q.tasks import schedule
 from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
 from rest_framework import status
@@ -15,9 +15,9 @@ from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.http import require_POST
 import json
 import datetime as dt
-from.models import Ticket
-from.serializers import TicketSerializer
+from django.utils import timezone
 
+from.serializers import TicketSerializer
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 
 from logger import colored_logger as logger
@@ -65,21 +65,32 @@ class ReserveTicketView(APIView):
         seat_numbers = request.data.get("seats", [])
 
         try:
-            train = Train.objects.get(train_id=train_id)
-            schedule = Schedule.objects.get(
-                train=train,
+            _train = Train.objects.get(train_id=train_id)
+            _schedule = Schedule.objects.get(
+                train=_train,
                 departure_time=departure_time
             )
 
+            # if the user already has a ticket for this train, delete it
+            Ticket.objects.filter(passenger=user, schedule=_schedule, status='reserved').delete()
+
             for seat_number in seat_numbers:
-                seat = Seat.objects.get(number=seat_number, train=train)
-                Ticket.objects.create(
+                seat = Seat.objects.get(number=seat_number, train=_train)
+                ticket = Ticket.objects.create(
                     passenger=user,
                     seat=seat,
                     valid_date=datetime.strptime(departure_date, '%Y-%m-%d').date(),
-                    schedule=schedule,
+                    schedule=_schedule,
                     status='reserved',
-                    reservation_time=timezone.now(),
+                )
+                logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ ticket created: {ticket.id}")
+
+                # Schedule a task to cancel the reservation after 2 minutes
+                schedule(
+                    "Bilety_i_pociagi.tasks.cancel_reservation",
+                    ticket.id,
+                    schedule_type="O",
+                    next_run=timezone.now() + timedelta(minutes=2)
                 )
 
             return Response({"message": "Miejsca zostały zarezerwowane."}, status=status.HTTP_201_CREATED)
