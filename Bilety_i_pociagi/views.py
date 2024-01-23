@@ -2,10 +2,12 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import login, authenticate, logout
+from django.utils import timezone
 from .forms import CustomUserCreationForm
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -49,6 +51,45 @@ class TicketList(APIView):
             serialized_data.append(ticket_data)
 
         return Response(serialized_data)
+
+
+@permission_classes([IsAuthenticated])
+class ReserveTicketView(APIView):
+    def post(self, request, format=None):
+        user = request.user
+        train_id = request.data.get("trainId")
+        departure_date = request.data.get("departureDate")
+        departure_time = request.data.get("departureTime")
+        seat_numbers = request.data.get("seats", [])
+
+        try:
+            train = Train.objects.get(train_id=train_id)
+            schedule = Schedule.objects.get(
+                train=train,
+                departure_time=departure_time
+            )
+
+            for seat_number in seat_numbers:
+                seat = Seat.objects.get(number=seat_number, train=train)
+                Ticket.objects.create(
+                    passenger=user,
+                    seat=seat,
+                    valid_date=datetime.strptime(departure_date, '%Y-%m-%d').date(),
+                    schedule=schedule,
+                    status='reserved',
+                    reservation_time=timezone.now(),
+                )
+
+            return Response({"message": "Miejsca zostały zarezerwowane."}, status=status.HTTP_201_CREATED)
+
+        except Train.DoesNotExist:
+            return Response({"error": "Nie znaleziono pociągu."}, status=status.HTTP_404_NOT_FOUND)
+        except Schedule.DoesNotExist:
+            return Response({"error": "Nie znaleziono harmonogramu."}, status=status.HTTP_404_NOT_FOUND)
+        except Seat.DoesNotExist:
+            return Response({"error": "Nie znaleziono miejsc."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
