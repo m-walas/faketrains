@@ -119,6 +119,14 @@ class Ticket(models.Model):
     def arrival_city(self):
         return self.schedule.arrival_city
     
+    @property
+    def departure_time(self):
+        return self.schedule.departure_time
+    
+    @property
+    def train_departure_time(self):
+        return self.schedule.train.departure_time
+    
     def __str__(self):
         train = self.seat.train
         route = train.trainroute_set.first().route

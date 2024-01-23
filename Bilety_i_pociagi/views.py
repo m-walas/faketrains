@@ -40,12 +40,14 @@ class TicketList(APIView):
         user_tickets = Ticket.objects.filter(passenger=request.user)
         serializer = TicketSerializer(user_tickets, many=True)
 
-        # Add departure and arrival city to each ticket in the serialized data
+        # Add departure city, arrival city, seat from the train, and train name to each ticket in the serialized data
         serialized_data = []
         for ticket_data in serializer.data:
             ticket_instance = Ticket.objects.get(pk=ticket_data['id'])
             ticket_data['departure_city'] = ticket_instance.departure_city
             ticket_data['arrival_city'] = ticket_instance.arrival_city
+            ticket_data['seat_number'] = ticket_instance.seat.number
+            ticket_data['train_name'] = ticket_instance.seat.train.train_id
             serialized_data.append(ticket_data)
 
         return Response(serialized_data)
