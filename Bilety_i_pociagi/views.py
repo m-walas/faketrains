@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import login, authenticate, logout
+from django.utils import timezone
 from .forms import CustomUserCreationForm
 from django.http import JsonResponse
 from datetime import datetime, timedelta
@@ -55,7 +56,8 @@ class ReserveTicketView(APIView):
                     seat=seat,
                     valid_date=datetime.strptime(departure_date, '%Y-%m-%d').date(),
                     schedule=schedule,
-                    status='reserved'
+                    status='reserved',
+                    reservation_time=timezone.now(),
                 )
 
             return Response({"message": "Miejsca zostały zarezerwowane."}, status=status.HTTP_201_CREATED)
