@@ -188,6 +188,7 @@ export default defineComponent({
               this.noRoutesDialog = true;
             } else {
               routesStore.setSchedules(response.data.schedules);
+              routesStore.setSelectedDepartureDate(this.selectedDate);
               // console.log("Zapisane trasy w store:", routesStore.schedules);
               this.$router.push('/routes');
             }

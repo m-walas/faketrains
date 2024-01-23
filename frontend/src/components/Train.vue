@@ -1,25 +1,26 @@
 <template>
   <div class="text-center">
     <v-card class="text-center my-4 mx-4" style="border-radius: 50px">
-      <v-card-text class="text-h3 my-4 mx-4 text-center font-weight-bold"
-        >Wybierz miejsca</v-card-text
-      >
+      <v-card-text class="text-h3 my-4 mx-4 text-center font-weight-bold">
+        Wybierz miejsca
+      </v-card-text>
       <div class="d-flex justify-center">
+
         <div class="train">
-          <div v-for="row in seats" :key="row[0].id" class="seat-row">
-            <div
-              v-for="seat in row"
-              :key="seat.id"
-              @click="handleSeatClick(seat)"
-              :class="{
-                'seat-selected': seat.selected,
-                'seat-reserved': seat.reserved,
-              }"
-            >
-              {{ seat.id }}
+          <div class="seat-row">
+            <div v-for="seat in seats.slice(0, 5)" :key="seat.seat_number" @click="handleSeatClick(seat)"
+                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}">
+              {{ seat.seat_number }}
+            </div>
+          </div>
+          <div class="seat-row">
+            <div v-for="seat in seats.slice(5, 10)" :key="seat.seat_number" @click="handleSeatClick(seat)"
+                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}">
+              {{ seat.seat_number }}
             </div>
           </div>
         </div>
+
       </div>
       <v-btn
         class="confirm-btn my-4 justify-center"
@@ -42,75 +43,93 @@
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { useButtonStore } from "@/store/buttonStore";
 import { useTicketStore } from "@/store/ticketStore";
+
 export default {
+  props: {
+    trainId: String,
+    departureDate: String,
+    departureTime: String,
+  },
+
   data() {
-    const numRows = 2;
-    const seatsPerRow = 5;
-
-    const seats = Array.from({ length: numRows }, (_, rowIndex) =>
-      Array.from({ length: seatsPerRow }, (_, seatIndex) => ({
-        id: seatIndex * numRows + rowIndex + 1,
-        selected: false,
-        reserved: false,
-        confirmed: false,
-      }))
-    );
-
-    seats[0][1].reserved = true;
-    seats[1][3].reserved = true; //Hardcoded for test
-
     return {
+      seats: [],
       snackbar: false,
       maxSeatsToSelect: useTicketStore().getTicketsCount,
-      seats,
-      ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
+      // ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
+      ws: new WebSocket("wss://django.mwalas.pl/ws/train_seat/"),
     };
   },
+
   methods: {
+
+    async fetchSeats() {
+      try {
+          const url = `/api/get_train_seats_with_availability/${this.trainId}/${this.departureDate}/${this.departureTime}/`;
+          const response = await axios.get(url);
+          const ticketStore = useTicketStore();
+          const previouslySelectedSeats = ticketStore.getSelectedSeats;
+
+          this.seats = response.data.seats.map(seat => ({
+              ...seat,
+              selected: previouslySelectedSeats.some(selectedSeat => selectedSeat.seat_number === seat.seat_number)
+          }));
+      } catch (error) {
+          console.error('Error fetching seats:', error);
+      }
+    },
+
     handleSeatClick(seat) {
       console.log("Clicked seat:", seat);
 
-      if (!seat.reserved) {
+      if (seat.is_available) {
         const selectedSeatsCount = this.getSelectedSeatsCount();
 
         if (seat.selected) {
           seat.selected = false;
-          console.log("Deselected:", seat.id);
+          console.log("Deselected:", seat.seat_number);
         } else if (selectedSeatsCount < this.maxSeatsToSelect) {
           seat.selected = true;
-          console.log("Selected:", seat.id);
+          console.log("Selected:", seat.seat_number);
         } else {
           this.snackbar = true;
         }
       }
     },
-    confirmSeat() {
-      const selectedSeats = this.getSelectedSeats();
-      const seatNumbers = selectedSeats.map((seat) => seat.id);
 
-      this.sendMessage(seatNumbers);
+    async confirmSeat() {
+      const selectedSeats = this.getSelectedSeats();
+      const seatNumbers = selectedSeats.map(seat => seat.seat_number);
+
+      const ticketStore = useTicketStore();
+      ticketStore.setSelectedSeats(selectedSeats.map(seat => ({
+          seat_number: seat.seat_number,
+          passenger: { firstName: '', lastName: '' }
+      })));
+
+      try {
+          await axios.post('/api/reserve_seats/', {
+              trainId: this.trainId,
+              departureDate: this.departureDate,
+              departureTime: this.departureTime,
+              seats: seatNumbers
+          });
+          console.log("Miejsca zostały zarezerwowane");
+      } catch (error) {
+          console.error('Error while reserving seats:', error);
+      }
+
       useButtonStore().setShowTrainSeats(false);
     },
 
     getSelectedSeats() {
-      // Return an array of currently selected seats
-      return this.seats
-        .flatMap((row) => row.filter((seat) => seat.selected))
-        .sort((a, b) => a.id - b.id);
+      return this.seats.filter(seat => seat.selected);
     },
     getSelectedSeatsCount() {
-      // Count the number of currently selected seats
-      let count = 0;
-      this.seats.forEach((row) => {
-        row.forEach((seat) => {
-          if (seat.selected) {
-            count++;
-          }
-        });
-      });
-      return count;
+      return this.getSelectedSeats().length;
     },
 
     sendMessage(seatNumbers) {
@@ -122,6 +141,7 @@ export default {
     },
   },
   mounted() {
+    this.fetchSeats();
     this.ws.onopen = function (event) {
       console.log("Connected");
     };
@@ -134,7 +154,7 @@ export default {
   },
   computed: {
     isAnySeatSelected() {
-      return this.seats.some((row) => row.some((seat) => seat.selected));
+      return this.getSelectedSeats().length > 0;
     },
   },
 };
@@ -143,10 +163,10 @@ export default {
 <style scoped>
 .train {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  width: 400px;
-  gap: 50px;
+  justify-content: center;
+  width: auto;
   background-color: #333;
   padding: 10px;
   border-radius: 20px;
@@ -154,6 +174,7 @@ export default {
 
 .seat-row {
   display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 

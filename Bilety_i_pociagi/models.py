@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 import datetime
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     def get_tickets(self):
@@ -88,7 +89,6 @@ class TicketPrice(models.Model):
     def __str__(self):
         return f"{self.train} na trasie {self.route} - Cena: {self.price} zł"
 
-
 class Ticket(models.Model):
     STATUS_CHOICES = (
         ('reserved', 'Zarezerwowany'),
@@ -101,7 +101,8 @@ class Ticket(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
-
+    reservation_time = models.DateTimeField(auto_now_add=True)
+    
     def save(self, *args, **kwargs):
         if not self.pk:
             ticket_price = TicketPrice.objects.get(
@@ -130,7 +131,7 @@ class Ticket(models.Model):
     def __str__(self):
         train = self.seat.train
         route = train.trainroute_set.first().route
-        return f"Bilet {self.id} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()}"
+        return f"Bilet {self.id} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()} - Czas rezerwacji: {self.reservation_time}"
 
     # !TODO: podczas kupowania biletu, w miejscu formularza gdzie się będzie wypełniało dane, zadbać o to, żeby 
     # !nie można było wybrać miejsca pociagu, który nie kursuje na danej trasie

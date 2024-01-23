@@ -25,15 +25,20 @@ type Route = DirectRoute | TransferRoute;
 
 interface RouteState {
   schedules: Route[];
+  selectedDepartureDate: string | null;
 }
 
 export const useRoutesStore = defineStore('routes', {
   state: (): RouteState => ({
     schedules: [],
+    selectedDepartureDate: null,
   }),
   actions: {
     setSchedules(data: Route[]) {
       this.schedules = data;
+    },
+    setSelectedDepartureDate(date: string) {
+      this.selectedDepartureDate = date;
     },
   },
 });

@@ -1,12 +1,10 @@
 <template>
   <v-container fill-height fluid>
     <v-layout align-center justify-center>
-      <!-- Routes Component -->
       <Routes></Routes>
 
-      <!-- Train Component (conditionally rendered) -->
       <v-overlay v-model="showTrain" class="d-flex justify-center align-center">
-        <Train></Train>
+        <Train :trainId="selectedTrainId" :departureDate="selectedDepartureDate" :departureTime="selectedDepartureTime"></Train>
       </v-overlay>
     </v-layout>
   </v-container>
@@ -16,6 +14,7 @@
 import Routes from "../components/Routes.vue";
 import Train from "@/components/Train.vue";
 import { useButtonStore } from "@/store/buttonStore";
+import { useRoutesStore } from "../store/routes";
 
 export default {
   data() {
@@ -31,6 +30,15 @@ export default {
         useButtonStore().setShowTrainSeats(value);
       },
     },
+    selectedTrainId() {
+      return useButtonStore().selectedTrainId;
+    },
+    selectedDepartureDate() {
+      return useRoutesStore().selectedDepartureDate;
+    },
+    selectedDepartureTime() {
+      return useButtonStore().selectedDepartureTime;
+    },
   },
   components: {
     Routes,
@@ -38,9 +46,9 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .train-card {
-  /* Adjust the max-width as needed */
   margin: auto;
   text-align: center;
 }
