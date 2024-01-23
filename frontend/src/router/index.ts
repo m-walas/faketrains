@@ -4,8 +4,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue';
 import SeatSelectionView from '../views/SeatSelectionView.vue';
 import RoutesView from '../views/RoutesView.vue';
-import AuthView from '../views/AuthView.vue'
-
+import AuthView from '../views/AuthView.vue';
+import ProfileView from '../views/ProfileView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/routes',
     name: 'Routes',
     component: RoutesView,
+  },
+   {
+    path: '/profile',
+    name: 'Profile',
+    component: ProfileView,
   },
   {
     path: '/:catchAll(.*)',

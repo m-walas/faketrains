@@ -15,6 +15,8 @@ from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.http import require_POST
 import json
 import datetime as dt
+from.models import Ticket
+from.serializers import TicketSerializer
 
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 
@@ -31,6 +33,24 @@ from logger import colored_logger as logger
 #         return JsonResponse({"success": True, "firstName": user.first_name, "lastName": user.last_name, "username": user.username})
 #     else:
 #         return JsonResponse({"success": False, "error": "Błędne dane logowania"}, status=401)
+
+
+class TicketList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_tickets = Ticket.objects.filter(passenger=request.user)
+        serializer = TicketSerializer(user_tickets, many=True)
+
+        # Add departure and arrival city to each ticket in the serialized data
+        serialized_data = []
+        for ticket_data in serializer.data:
+            ticket_instance = Ticket.objects.get(pk=ticket_data['id'])
+            ticket_data['departure_city'] = ticket_instance.departure_city
+            ticket_data['arrival_city'] = ticket_instance.arrival_city
+            serialized_data.append(ticket_data)
+
+        return Response(serialized_data)
 
 
 @permission_classes([IsAuthenticated])
