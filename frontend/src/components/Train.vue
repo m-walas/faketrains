@@ -5,37 +5,34 @@
         Wybierz miejsca
       </v-card-text>
       <div class="d-flex justify-center">
-
         <div class="train">
           <div class="seat-row">
-            <div v-for="seat in seats.slice(0, 5)" :key="seat.seat_number" @click="handleSeatClick(seat)"
-                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}">
+            <div v-for="seat in seats.slice(0, 5)" :key="seat.seat_number"
+                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
+                @click="handleSeatClick(seat)">
               {{ seat.seat_number }}
             </div>
           </div>
           <div class="seat-row">
-            <div v-for="seat in seats.slice(5, 10)" :key="seat.seat_number" @click="handleSeatClick(seat)"
-                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}">
+            <div v-for="seat in seats.slice(5, 10)" :key="seat.seat_number"
+                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
+                @click="handleSeatClick(seat)">
               {{ seat.seat_number }}
             </div>
           </div>
         </div>
-
       </div>
       <v-btn
         class="confirm-btn my-4 justify-center"
         @click="confirmSeat"
         color="primary"
-        :disabled="
-          !isAnySeatSelected || getSelectedSeatsCount() != maxSeatsToSelect
-        "
-      >
+        :disabled="!isAnySeatSelected || getSelectedSeatsCount() != maxSeatsToSelect">
         Potwierdź
       </v-btn>
+      <p class="reservation-info">Po zatwierdzeniu miejsce zostanie tymczasowo zarezerwowane <br> i nie będzie można zmienić decyzji.</p>
       <div class="text-center">
         <v-snackbar v-model="snackbar" :timeout="2000" color="blue-grey">
-          Maksymalna liczba miejsc do zarezerwowania to:
-          {{ this.maxSeatsToSelect }}
+          Maksymalna liczba miejsc do zarezerwowania to: {{ this.maxSeatsToSelect }}
         </v-snackbar>
       </div>
     </v-card>
@@ -83,17 +80,21 @@ export default {
     },
 
     handleSeatClick(seat) {
-        if (seat.is_available || seat.selected) {
-            seat.selected = !seat.selected;
+      console.log("Clicked seat:", seat);
 
-            const ticketStore = useTicketStore();
-            ticketStore.setSelectedSeats(
-                this.seats.filter(seat => seat.selected).map(seat => ({
-                    seat_number: seat.seat_number,
-                    passenger: { firstName: '', lastName: '' }
-                }))
-            );
+      if (seat.is_available) {
+        const selectedSeatsCount = this.getSelectedSeatsCount();
+
+        if (seat.selected) {
+          seat.selected = false;
+          console.log("Deselected:", seat.seat_number);
+        } else if (selectedSeatsCount < this.maxSeatsToSelect) {
+          seat.selected = true;
+          console.log("Selected:", seat.seat_number);
+        } else {
+          this.snackbar = true;
         }
+      }
     },
 
     async confirmSeat() {
@@ -191,4 +192,12 @@ export default {
 .seat-reserved {
   background-color: red !important;
 }
+
+.reservation-info {
+    font-size: 12px;
+    font-style: italic;
+    color: grey;
+    text-align: center;
+    margin-top: 10px;
+  }
 </style>

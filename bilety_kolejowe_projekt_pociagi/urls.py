@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 #? serializers
 
 from Bilety_i_pociagi.views import TicketList, city_search_view, user_profile, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
-from Bilety_i_pociagi.views import ReserveTicketView
+from Bilety_i_pociagi.views import ReserveTicketView, confirm_reservation
 
 urlpatterns = [
     path('', index, name='index'),
@@ -30,4 +30,5 @@ urlpatterns = [
     path('api/receive_route', receive_selected_route, name='receive_selected_route'),
     path('api/get_train_seats_with_availability/<str:train_id>/<str:departure_date>/<str:departure_time>/', get_train_seats_with_availability, name='get_train_seats_with_availability'),
     path('api/reserve_seats/', ReserveTicketView.as_view(), name='reserve_seats'),
+    path('api/confirm_reservation/', confirm_reservation, name='confirm_reservation'),
 ]

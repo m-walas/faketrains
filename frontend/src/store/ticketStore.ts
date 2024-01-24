@@ -41,6 +41,12 @@ export const useTicketStore = defineStore({
     },
     setSelectedSeats(seats: SeatWithPassenger[]) { 
       this.selectedSeats = seats;
-    }
+    },
+    clearSelectedSeats() {
+      this.selectedSeats = [];
+    },
+    clearTicketsCount() {
+      this.ticketsCount = 0;
+    },
   },
 });

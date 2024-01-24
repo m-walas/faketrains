@@ -12,7 +12,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ['id', 'passenger', 'valid_date', 'price', 'status',
-                  'departure_city', 'arrival_city', 'departure_time', 'seat_number', 'train_name']
+                    'departure_city', 'arrival_city', 'departure_time', 'seat_number', 'train_name']
 
     def get_departure_city(self, obj):
         return obj.schedule.departure_city

@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 import json
 import datetime as dt
 from django.utils import timezone
+from django.db import transaction
 
 from.serializers import TicketSerializer
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
@@ -39,7 +40,7 @@ class TicketList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_tickets = Ticket.objects.filter(passenger=request.user)
+        user_tickets = Ticket.objects.filter(passenger=request.user, status='confirmed')
         serializer = TicketSerializer(user_tickets, many=True)
 
         # Add departure city, arrival city, seat from the train, and train name to each ticket in the serialized data
@@ -53,6 +54,29 @@ class TicketList(APIView):
             serialized_data.append(ticket_data)
 
         return Response(serialized_data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def confirm_reservation(request):
+    with transaction.atomic():
+        try:
+            for ticket_data in request.data.get('tickets', []):
+                seat_number = ticket_data.get('seat_number')
+                passenger_data = ticket_data.get('passenger')
+
+                ticket = Ticket.objects.get(seat__number=seat_number, status='reserved', passenger=request.user)
+                ticket.status = 'confirmed'
+
+                ticket.save()
+                logger.info(f"🚀 ~ file: views.py ~ confirm_reservation ~ Ticket purchased: {ticket}")
+            return Response({"message": "Rezerwacja została potwierdzona."}, status=status.HTTP_200_OK)
+
+        except Ticket.DoesNotExist:
+            logger.error("❌ Ticket.DoesNotExist ❌")
+            return Response({"error": "Bilet nie został znaleziony."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes([IsAuthenticated])
