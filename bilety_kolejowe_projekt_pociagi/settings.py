@@ -37,7 +37,7 @@ else:
     logger.critical("🚀 ~ file: settings.py ~ line 30 ~ DEBUG set to True")
     logger.critical("🚀 ~ file: settings.py ~ line 31 ~ RUNNING_IN_DOCKER set to False")
 
-ALLOWED_HOSTS = [ 'localhost', '127.0.0.1' , 'django.mwalas.pl', 'faketrains.mwalas.pl' ]
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1' , 'nginx.mwalas.pl', 'faketrains.mwalas.pl' ]
 
 # Application definition
 INSTALLED_APPS = [
@@ -104,7 +104,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5001",
     "http://localhost:5002",
     "https://faketrains.mwalas.pl",
-    "https://django.mwalas.pl",
+    "https://nginx.mwalas.pl",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -117,7 +117,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5001",
     "http://localhost:5002",
     "https://faketrains.mwalas.pl",
-    "https://django.mwalas.pl",
+    "https://nginx.mwalas.pl",
 ]
 
 CHANNEL_LAYERS = {
