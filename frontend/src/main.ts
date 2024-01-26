@@ -14,8 +14,9 @@ let isTokenBeingRefreshed = false;
 let didTokenRefreshFail = false;
 
 // ! EDIT HERE if working locally !
-// axios.defaults.baseURL = 'http://localhost:8000/';
-axios.defaults.baseURL = 'https://django.mwalas.pl/';
+// axios.defaults.baseURL = 'http://localhost:5002/'; // address of the nginx server
+// axios.defaults.baseURL = 'http://localhost:8000/'; // address of the django server locally
+axios.defaults.baseURL = 'https://nginx.mwalas.pl/';
 console.log('axios.defaults.baseURL: ', axios.defaults.baseURL);
 
 library.add(faClock);

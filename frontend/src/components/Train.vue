@@ -56,8 +56,12 @@ export default {
       seats: [],
       snackbar: false,
       maxSeatsToSelect: useTicketStore().getTicketsCount,
+      // address for nginx is 5002 
+      // ws: new WebSocket("ws://localhost:5002/ws/train_seat/"),
+      // address for django localhost is 8000
       // ws: new WebSocket("ws://localhost:8000/ws/train_seat/"),
-      ws: new WebSocket("ws://django.mwalas.pl/ws/train_seat/"),
+      // domanin address
+      ws: new WebSocket("wss://nginx.mwalas.pl/ws/train_seat/"),
     };
   },
 
