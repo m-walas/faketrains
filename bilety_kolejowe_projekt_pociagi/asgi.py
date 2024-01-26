@@ -10,20 +10,20 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 import os
 from django.core.asgi import get_asgi_application
 
-django_asgi_app = get_asgi_application()
-
-from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from Bilety_i_pociagi import routing
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bilety_kolejowe_projekt_pociagi.settings')
 
-application = ProtocolTypeRouter({
-    "http": django_asgi_app,
-    # "https": django_asgi_app,
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            routing.websocket_urlpatterns
-        )
-    ),
-})
+django_asgi_app = get_asgi_application()
+
+import Bilety_i_pociagi.routing as routing
+
+application = ProtocolTypeRouter(
+    {
+        'http': django_asgi_app,
+        "websocket": AllowedHostsOriginValidator(
+            AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns))),
+    }
+)

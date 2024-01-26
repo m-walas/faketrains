@@ -1,13 +1,14 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from logger import colored_logger as logger
 
 class TrainSeatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("WebSocket connected")
+        logger.info("🚀 WEBSOCKET CONNECTED 🚀 ")
         await self.accept()
 
     async def disconnect(self, close_code):
-        print(f"WebSocket disconnected with code: {close_code}")
+        logger.warn(f" ❌ WebSocket disconnected with code: {close_code} ❌ ")
         pass
 
     async def receive(self, text_data):

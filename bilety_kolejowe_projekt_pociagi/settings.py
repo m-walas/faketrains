@@ -37,7 +37,7 @@ else:
     logger.critical("🚀 ~ file: settings.py ~ line 30 ~ DEBUG set to True")
     logger.critical("🚀 ~ file: settings.py ~ line 31 ~ RUNNING_IN_DOCKER set to False")
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1' , 'django.mwalas.pl', 'faketrains.mwalas.pl' ]
 
 # Application definition
 INSTALLED_APPS = [
@@ -96,13 +96,13 @@ Q_CLUSTER = {
     'log_level': 'DEBUG',
 }
 
-# name of vue app on website is: faketrains.mwalas.pl
-# name of vue app on localhost is: localhost:5001
-# name of django app on website is: django.mwalas.pl
-# name of django app on localhost is: localhost:5000
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5001",
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5002",
     "http://localhost:5000",
+    "http://localhost:5001",
+    "http://localhost:5002",
     "https://faketrains.mwalas.pl",
     "https://django.mwalas.pl",
 ]
@@ -110,10 +110,14 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5000',
-    'http://localhost:5001',
-    'https://faketrains.mwalas.pl',
-    'https://django.mwalas.pl',
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5002",
+    "http://localhost:5000",
+    "http://localhost:5001",
+    "http://localhost:5002",
+    "https://faketrains.mwalas.pl",
+    "https://django.mwalas.pl",
 ]
 
 CHANNEL_LAYERS = {
