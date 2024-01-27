@@ -7,7 +7,7 @@
                             <h1 class="text-info-signup"> Stwórz konto </h1>
                             <v-card class="auth-card">
                             
-                                <v-form v-on:keydown.enter="submitForm" v-model="valid">
+                                <v-form v-on:keydown.enter="submitFormRegister" v-model="valid">
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
@@ -79,7 +79,7 @@
                             <h1 class="text-info-signin"> Zaloguj się </h1>
                             <v-card class="auth-card">
 
-                                <v-form v-on:keydown.enter="submitForm" v-model="valid">
+                                <v-form v-on:keydown.enter="submitFormLogin" v-model="valid">
                                     <v-text-field class="input-field mb-3" v-model="email" label="Email" :rules="emailRules" outlined dense></v-text-field>
                                     <v-text-field class="input-field mb-3" v-model="password" label="Hasło" type="password" :rules="passwordRules" outlined dense></v-text-field>
                                     <v-alert v-if="showAlert" type="error"  variant="outlined" icon="$info" class="mb-3 mx-auto" style="max-width: 260px" :value="true" v-model="showAlert">
