@@ -54,8 +54,15 @@ export default {
   },
   watch: {
     $route(to, from) {
-      if (this.authStore.isAuthenticated && to.path === "/auth") {
+      if (this.authStore.isAuthenticated && (to.path === "/auth")) {
         router.push("/").catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
+      }
+      if (!this.authStore.isAuthenticated && (to.path === "/profile")) {
+        router.push("/auth").catch((err) => {
           if (err.name !== "NavigationDuplicated") {
             throw err;
           }

@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 #! SECURITY WARNING: don't run with debug turned on in production!
-# use environment variable to set DEBUG to True or False
-# if in docker container, set DEBUG to False
-# if not in docker container, set DEBUG to True
+#? use environment variable to set DEBUG to True or False
+#? if in docker container, set DEBUG to False
+#? if not in docker container, set DEBUG to True
 running_in_docker = os.environ.get('RUNNING_IN_DOCKER') == 'true'
 if running_in_docker:
     DEBUG = False
@@ -36,6 +36,8 @@ else:
     DEBUG = True
     logger.critical("🚀 ~ file: settings.py ~ line 30 ~ DEBUG set to True")
     logger.critical("🚀 ~ file: settings.py ~ line 31 ~ RUNNING_IN_DOCKER set to False")
+
+# DEBUG = True
 
 ALLOWED_HOSTS = [ 'localhost', '127.0.0.1' , 'nginx.mwalas.pl', 'faketrains.mwalas.pl' ]
 

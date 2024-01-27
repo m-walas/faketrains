@@ -7,12 +7,12 @@
                             <h1 class="text-info-signup"> Stwórz konto </h1>
                             <v-card class="auth-card">
                             
-                                <v-form v-on:keydown.enter="submitFormRegister" v-model="valid">
+                                <v-form v-on:keydown.enter="submitFormRegister" v-model="register_valid">
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
-                                    v-model="first_name"
-                                    :rules="firstNameRules"
+                                    v-model="register_first_name"
+                                    :rules="register_firstNameRules"
                                     label="Imię"
                                     type="text"
                                     required
@@ -21,8 +21,8 @@
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
-                                    v-model="last_name"
-                                    :rules="lastNameRules"
+                                    v-model="register_last_name"
+                                    :rules="register_lastNameRules"
                                     label="Nazwisko"
                                     type="text"
                                     required
@@ -31,8 +31,8 @@
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
-                                    v-model="email"
-                                    :rules="emailRules"
+                                    v-model="register_email"
+                                    :rules="register_emailRules"
                                     label="Email"
                                     type="email"
                                     required
@@ -41,8 +41,8 @@
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
-                                    v-model="password1"
-                                    :rules="passwordRules1"
+                                    v-model="register_password1"
+                                    :rules="register_passwordRules1"
                                     label="Hasło"
                                     type="password"
                                     required
@@ -51,8 +51,8 @@
                                 <v-text-field
                                     class="input-field"
                                     density="compact"
-                                    v-model="password2"
-                                    :rules="passwordRules2"
+                                    v-model="register_password2"
+                                    :rules="register_passwordRules2"
                                     label="Powtórz hasło"
                                     type="password"
                                     required
@@ -67,9 +67,9 @@
                                 style="max-width: 260px"
                                 ></v-alert>
                                 <v-row class="ma-1" justify="end">
-                                    <button class="register-btn" @click="submitFormRegister" :disabled="!valid">
+                                    <v-btn class="register-btn" @click="submitFormRegister" :disabled="!register_valid">
                                     Zarejestruj
-                                    </button>
+                                    </v-btn>
                                 </v-row>
                                 </v-form>
                             </v-card>
@@ -79,14 +79,14 @@
                             <h1 class="text-info-signin"> Zaloguj się </h1>
                             <v-card class="auth-card">
 
-                                <v-form v-on:keydown.enter="submitFormLogin" v-model="valid">
-                                    <v-text-field class="input-field mb-3" v-model="email" label="Email" :rules="emailRules" outlined dense></v-text-field>
-                                    <v-text-field class="input-field mb-3" v-model="password" label="Hasło" type="password" :rules="passwordRules" outlined dense></v-text-field>
+                                <v-form v-on:keydown.enter="submitFormLogin" v-model="login_valid">
+                                    <v-text-field class="input-field mb-3" v-model="login_email" label="Email" :rules="login_emailRules" outlined dense></v-text-field>
+                                    <v-text-field class="input-field mb-3" v-model="login_password" label="Hasło" type="password" :rules="login_passwordRules" outlined dense></v-text-field>
                                     <v-alert v-if="showAlert" type="error"  variant="outlined" icon="$info" class="mb-3 mx-auto" style="max-width: 260px" :value="true" v-model="showAlert">
                                     {{ errorMessage }}
                                     </v-alert>
                                     <v-row class="ma-1" justify="end">
-                                        <button class="login-btn" @click="submitFormLogin" :disabled="!valid" depressed> Zaloguj </button>
+                                        <v-btn class="login-btn" @click="submitFormLogin" :disabled="!login_valid" depressed> Zaloguj </v-btn>
                                     </v-row>
                                 </v-form>
                             </v-card>
@@ -124,50 +124,51 @@ data() {
     return {
     isRegistering: false,
     // login form
-    email: '',
-    password: '',
+    login_email: '',
+    login_password: '',
     showAlert: false,
     errorMessage: '',
-    valid: false,
-    emailRules: [
+    login_valid: false,
+    login_emailRules: [
     v => !!v || 'Email jest wymagany',
     v => /.+@.+\..+/.test(v) || 'Podaj prawidłowy adres email',
     ],
-    passwordRules: [
+    login_passwordRules: [
     v => !!v || 'Hasło jest wymagane',
     ],
     // register form
-    first_name: '',
-    last_name: '',
-    email: '',
-    password1: '',
-    password2: '',
+    register_first_name: '',
+    register_last_name: '',
+    register_email: '',
+    register_password1: '',
+    register_password2: '',
     snackbarStore: useSnackbarStore(),
     serverErrors: [],
 
-    valid: false,
-    firstNameRules: [
+    register_valid: false,
+
+    register_firstNameRules: [
     v => !!v || 'Imię jest wymagane',
     v=> v?.length >= 2 || 'Imię nie może mieć mniej niż 2 znaki',
     v => v?.length <= 50 || 'Imię nie może być dłuższe niż 50 znaków'
     ],
-    lastNameRules: [
+    register_lastNameRules: [
     v => !!v || 'Nazwisko jest wymagane',
     v=> v?.length >= 2 || 'Nazwisko nie może mieć mniej niż 2 znaki',
     v => v?.length <= 50 || 'Nazwisko nie może być dłuższe niż 50 znaków'
     ],
-    emailRules: [
+    register_emailRules: [
     v => !!v || 'E-mail jest wymagany',
     v => /.+@.+\..+/.test(v) || 'E-mail musi mieć prawidłowy format'
     ],
-    passwordRules1: [
+    register_passwordRules1: [
     v => !!v || 'Hasło jest wymagane',
     v =>v?.length >= 8 || 'Hasło musi mięć co najmniej 8 znaków'
     ],
-    passwordRules2: [
+    register_passwordRules2: [
     v => !!v || 'Hasło jest wymagane',
     v =>v?.length >= 8 || 'Hasło musi mięć co najmniej 8 znaków',
-    v => v == this.password1 || 'Hasła nie pasują'
+    v => v == this.register_password1 || 'Hasła nie pasują'
     ],
     };
 },
@@ -175,8 +176,8 @@ methods: {
     async submitFormLogin() {
         try {
         const response = await axios.post('/api/token/', {
-            username: this.email,
-            password: this.password,
+            username: this.login_email,
+            password: this.login_password,
         });
         if (response.data.access && response.data.refresh) {
             const authStore = useAuthStore();
@@ -206,18 +207,18 @@ methods: {
         }
     },
     async submitFormRegister() {
-        if (!this.valid) {
+        if (!this.register_valid) {
         return;
         }
         this.serverErrors = []
 
         try {
         const resp = await axios.post('/api/user/register', {
-            first_name: this.first_name,
-            last_name: this.last_name,
-            email: this.email, 
-            password1: this.password1,
-            password2: this.password2
+            first_name: this.register_first_name,
+            last_name: this.register_last_name,
+            email: this.register_email, 
+            password1: this.register_password1,
+            password2: this.register_password2
         }, { headers: { 'Authorization': '' } });
 
         if (resp.data.success) {
