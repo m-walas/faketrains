@@ -1,15 +1,15 @@
 <template>
-  <v-app>
-    <AppBar></AppBar>
-    <v-main>
-      <router-view v-slot="{ Component }">
-        <transition name="fade-zoom" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </v-main>
-    <Footer></Footer>
-  </v-app>
+    <v-app>
+      <AppBar></AppBar>
+      <v-main>
+        <router-view v-slot="{ Component }">
+          <transition name="fade-zoom" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </v-main>
+      <Footer></Footer>
+    </v-app>
 </template>
 
 <style scoped>
@@ -21,6 +21,7 @@
 
 .v-main {
   flex: 1;
+  background-color: rgba(255, 255, 255, 0);
 }
 
 .fade-zoom-enter-active,

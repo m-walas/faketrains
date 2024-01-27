@@ -22,7 +22,6 @@
       </v-btn>
     </template>
     
- 
   </v-app-bar>
 
   <v-snackbar v-model="snackbarVisible" color="success" top>
@@ -51,7 +50,7 @@
 }
 
 .app-bar-title:hover {
-  color: #1258A7;
+  color: #ff2770;
 }
 
 .user-info {

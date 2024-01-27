@@ -17,6 +17,8 @@ import json
 import datetime as dt
 from django.utils import timezone
 from django.db import transaction
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from.serializers import TicketSerializer
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
@@ -79,6 +81,36 @@ def confirm_reservation(request):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+def get_train_seats_with_availability(request, train_id, departure_date, departure_time):
+    try:
+        departure_date = dt.datetime.strptime(departure_date, '%Y-%m-%d').date()
+        departure_time = dt.datetime.strptime(departure_time, '%H:%M:%S').time()
+
+        train = Train.objects.get(train_id=train_id)
+        schedule = Schedule.objects.get(train=train, departure_time=departure_time)
+
+        seats = Seat.objects.filter(train=train)
+        seats_data = []
+        for seat in seats:
+            ticket_exists = Ticket.objects.filter(seat=seat, valid_date=departure_date, schedule=schedule).exists()
+            seats_data.append({
+                "seat_number": seat.number,
+                "class_type": seat.class_type,
+                "is_available": not ticket_exists
+            })
+
+        logger.info(f"🚀 ~ file: views.py ~ get_train_seats_with_availability ~ zwrócono miejsca")
+        return JsonResponse({"seats": seats_data})
+    except Train.DoesNotExist:
+        logger.error("❌ Train.DoesNotExist ❌")
+        return JsonResponse({"error": "Pociąg nie istnieje"}, status=404)
+    except Schedule.DoesNotExist:
+        logger.error("❌ Schedule.DoesNotExist ❌")
+        return JsonResponse({"error": "Harmonogram nie istnieje"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 @permission_classes([IsAuthenticated])
 class ReserveTicketView(APIView):
     def post(self, request, format=None):
@@ -117,6 +149,18 @@ class ReserveTicketView(APIView):
                     next_run=timezone.now() + timedelta(minutes=2)
                 )
 
+            # # Send updated seats data to the WebSocket group
+            updated_seats = get_train_seats_with_availability(request, train_id, departure_date, departure_time)
+
+            if isinstance(updated_seats, list) and all(isinstance(seat, dict) for seat in updated_seats):
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    "train_seats",
+                    {
+                        "type": "seat_info",
+                        "message": updated_seats
+                    }
+                )
             return Response({"message": "Miejsca zostały zarezerwowane."}, status=status.HTTP_201_CREATED)
 
         except Train.DoesNotExist:
@@ -219,36 +263,6 @@ def receive_selected_route(request):
     except json.JSONDecodeError:
         logger.error("❌ JSONDecodeError ❌")
         return JsonResponse({"status": "error", "message": "Nieprawidłowe dane"}, status=400)
-
-
-def get_train_seats_with_availability(request, train_id, departure_date, departure_time):
-    try:
-        departure_date = dt.datetime.strptime(departure_date, '%Y-%m-%d').date()
-        departure_time = dt.datetime.strptime(departure_time, '%H:%M:%S').time()
-
-        train = Train.objects.get(train_id=train_id)
-        schedule = Schedule.objects.get(train=train, departure_time=departure_time)
-
-        seats = Seat.objects.filter(train=train)
-        seats_data = []
-        for seat in seats:
-            ticket_exists = Ticket.objects.filter(seat=seat, valid_date=departure_date, schedule=schedule).exists()
-            seats_data.append({
-                "seat_number": seat.number,
-                "class_type": seat.class_type,
-                "is_available": not ticket_exists
-            })
-
-        logger.info(f"🚀 ~ file: views.py ~ get_train_seats_with_availability ~ zwrócono miejsca")
-        return JsonResponse({"seats": seats_data})
-    except Train.DoesNotExist:
-        logger.error("❌ Train.DoesNotExist ❌")
-        return JsonResponse({"error": "Pociąg nie istnieje"}, status=404)
-    except Schedule.DoesNotExist:
-        logger.error("❌ Schedule.DoesNotExist ❌")
-        return JsonResponse({"error": "Harmonogram nie istnieje"}, status=404)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
 
 
 def index(request):

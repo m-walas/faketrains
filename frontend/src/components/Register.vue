@@ -1,10 +1,11 @@
 <template>
+  <v-container class="register-container">
   <v-card class="pa-4 register-card">
-    <v-card-text class="text-h3 mb-8 text-center"> Rejestracja </v-card-text>
+    <v-card-text class="text-h3 mb-8 text-center"> Register </v-card-text>
     
     <v-form v-on:keydown.enter="submitForm" v-model="valid">
       <v-text-field
-        class="input-field-register"
+        class="input-field"
         density="compact"
         v-model="first_name"
         :rules="firstNameRules"
@@ -14,7 +15,7 @@
       >
       </v-text-field>
       <v-text-field
-        class="input-field-register"
+        class="input-field"
         density="compact"
         v-model="last_name"
         :rules="lastNameRules"
@@ -24,7 +25,7 @@
       >
       </v-text-field>
       <v-text-field
-        class="input-field-register"
+        class="input-field"
         density="compact"
         v-model="email"
         :rules="emailRules"
@@ -34,7 +35,7 @@
       >
       </v-text-field>
       <v-text-field
-        class="input-field-register"
+        class="input-field"
         density="compact"
         v-model="password1"
         :rules="passwordRules1"
@@ -44,7 +45,7 @@
       >
       </v-text-field>
       <v-text-field
-        class="input-field-register"
+        class="input-field"
         density="compact"
         v-model="password2"
         :rules="passwordRules2"
@@ -62,40 +63,71 @@
       style="max-width: 260px"
       ></v-alert>
       <v-row class="ma-1" justify="end" style="max-width: 100%">
-        <v-btn class="register-btn" @click="submitForm" color="blue" :disabled="!valid">
+        <v-btn class="register-btn" @click="submitForm" color="#ff2770" :disabled="!valid">
           Zarejestruj
         </v-btn>
       </v-row>
     </v-form>
   </v-card>
+</v-container>
 </template>
 
 
 <style scoped>
-  .input-field-register {
-    margin-bottom: 10px;
-  }
+.register-container {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url(../assets/tlo.jpg) no-repeat center center fixed;
+  background-size: cover;
+}
 
-  .register-card {
-    max-width: 500px;
-    margin: 50px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    transition: box-shadow 0.3s ease;
-  }
+.register-card {
+  width: 400px;
+  height: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  box-shadow: 0 0 25px #ff2770;
+  border-radius: 8px;
+  border: 2px solid #ff2770;
+  backdrop-filter: blur(18px);
+  color: #fff;
+  transition: box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0) !important;
+}
 
-  .register-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  }
+.register-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
 
-  .register-btn {
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
+.input-field {
+  background-color: transparent !important;
+  margin-top: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  transition: box-shadow 0.2s ease-in-out;
+}
 
-  .register-btn:hover {
-    background-color: #3b82f6;
-    transform: translateY(-2px);
-  }
+.input-field:hover {
+  box-shadow: 0 0 25px #ff2770;
+}
+
+.input-field::placeholder {
+  color: #fff;
+}
+
+.register-btn {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  color: white;
+  margin-top: 20px;
+}
+
+.register-btn:hover {
+  background-color: #ff2770;
+  transform: translateY(-2px);
+}
 </style>
 
 

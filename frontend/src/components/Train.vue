@@ -83,6 +83,10 @@ export default {
       }
     },
 
+    updateSeats(updatedSeats) {
+      this.seats = updatedSeats;
+    },
+
     handleSeatClick(seat) {
       console.log("Clicked seat:", seat);
 
@@ -104,6 +108,7 @@ export default {
     async confirmSeat() {
       const selectedSeats = this.getSelectedSeats();
       const seatNumbers = selectedSeats.map(seat => seat.seat_number);
+      console.log("Selected seats:", seatNumbers);
 
       const ticketStore = useTicketStore();
       ticketStore.setSelectedSeats(selectedSeats.map(seat => ({
@@ -112,12 +117,13 @@ export default {
       })));
 
       try {
-          await axios.post('/api/reserve_seats/', {
+          const response = await axios.post('/api/reserve_seats/', {
               trainId: this.trainId,
               departureDate: this.departureDate,
               departureTime: this.departureTime,
-              seats: seatNumbers
+              seats: seatNumbers,
           });
+          // this.sendMessage(response.data.seats);
           console.log("Miejsca zostały zarezerwowane");
       } catch (error) {
           console.error('Error while reserving seats:', error);
@@ -135,7 +141,7 @@ export default {
 
     sendMessage(seatNumbers) {
       const message = JSON.stringify({
-        selectedSeatNumbers: seatNumbers,
+        seat_info: seatNumbers,
       });
       this.ws.send(message);
       console.log(seatNumbers);
@@ -145,6 +151,13 @@ export default {
     this.fetchSeats();
     this.ws.onopen = function (event) {
       console.log("Connected");
+    };
+    this.ws.onmessage = (event) => {
+      console.log("websocket message received", event.data);
+      const data = JSON.parse(event.data);
+      if (data.message) {
+        this.updateSeats(data.seat_info);
+      }
     };
     this.$watch(
       () => useTicketStore().getTicketsCount,

@@ -2,7 +2,7 @@
   <v-container fluid class="main-container">
     <v-row>
       <v-col cols="12" class="image-col">
-        <v-img src="../assets/tlo.jpg" class="full-width"></v-img>
+        <v-img src="../assets/tlo.jpg" class="background" :style="{ height: '100vh' }"></v-img>
 
         <v-card class="form-card">
           <v-card-title class="headline font-weight-bold mb-2">Znajdź Połączenie</v-card-title>
@@ -63,8 +63,13 @@
   min-height: 100vh;
 }
 
-.full-width {
+.background {
   width: 100%;
+  background-size: cover;
+  background-attachment: fixed;
+  /* position: absolute; */
+  left: 0;
+  top: 0;
 }
 
 .image-col {

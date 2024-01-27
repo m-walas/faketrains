@@ -1,18 +1,19 @@
 <template>
   <v-container fluid class="d-flex flex-column align-center justify-center">
     <v-fade-transition mode="out-in">
-      <Login v-if="showLogin"></Login>
-      <Register v-else @registration-success="handleRegistrationSuccess"></Register>
+      <!-- <Login v-if="showLogin"></Login> -->
+      <!-- <Register v-else @registration-success="handleRegistrationSuccess"></Register> -->
+      <SignUp_In></SignUp_In>
     </v-fade-transition>
 
-    <div class="auth-switch-text">
+    <!-- <div class="auth-switch-text">
       <p class="text-center">
         {{ showLogin ? 'Nie masz jeszcze konta?' : 'Masz już konto?' }}
         <span class="auth-switch-button" @click="changeAuthComponent">
           {{ showLogin ? 'Załóż je teraz' : 'Zaloguj się' }}
         </span>
       </p>
-    </div>
+    </div> -->
   </v-container>
 </template>
 
@@ -26,13 +27,13 @@
 
 .auth-switch-button {
   cursor: pointer;
-  color: #1976D2;
+  color: #ff2770;
   font-weight: 500;
   text-decoration: underline;
 }
 
 .auth-switch-button:hover {
-  color: #1258A7;
+  color: #940032;
   text-decoration: none;
 }
 </style>
@@ -41,6 +42,7 @@
 <script lang="ts">
 import Register from "../components/Register.vue";
 import Login from "../components/Login.vue"
+import SignUp_In from "../components/SignUp_In.vue"
 
 export default {
   data() {
@@ -61,7 +63,8 @@ export default {
 
   components: {
     Register,
-    Login
+    Login,
+    SignUp_In,
   }
 
 };
