@@ -77,8 +77,8 @@ class CreateStripeSessionView(APIView):
                 payment_method_types=['card'],
                 line_items=line_items,
                 mode='payment',
-                success_url=request.build_absolute_uri('/success/'),
-                cancel_url=request.build_absolute_uri('/cancel/'),
+                success_url="https://faketrains.mwalas.pl/?success=true",
+                cancel_url="https://faketrains.mwalas.pl/?canceled=true",
             )
             return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_TEST_PUBLIC_KEY})
         except Exception as e:
