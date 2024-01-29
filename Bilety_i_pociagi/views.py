@@ -96,24 +96,47 @@ def stripe_webhook(request):
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError:
+    except ValueError as e:
+        logger.error(f"Invalid payload: {e}")
         return JsonResponse({'error': 'Invalid payload'}, status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe.error.SignatureVerificationError as e:
+        logger.error(f"Invalid signature: {e}")
         return JsonResponse({'error': 'Invalid signature'}, status=400)
 
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
+    event_dict = event.to_dict()
+
+    if event_dict['type'] == "checkout.session.completed":
+        session = event_dict['data']['object']
+        client_reference_id = session.get('client_reference_id')
         try:
-            ticket = Ticket.objects.get(client_reference_id=session.client_reference_id)
+            ticket = Ticket.objects.get(id=client_reference_id)
             if session.payment_status == 'paid':
                 ticket.status = 'confirmed'
-                logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket purchased: {ticket}")
+                ticket.save()
+                logger.info(f"Ticket confirmed: {ticket.id}")
             else:
-                ticket.delete()
-            ticket.save()
+                # Można również obsłużyć inne statusy płatności
+                logger.info(f"Session payment status: {session.payment_status}")
         except Ticket.DoesNotExist:
-            logger.error("❌ Ticket.DoesNotExist ❌")
-            return JsonResponse({'error': 'Bilet nie został znaleziony'}, status=404)
+            logger.error(f"Ticket not found: {client_reference_id}")
+            return JsonResponse({'error': 'Ticket not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error updating ticket: {e}")
+            return JsonResponse({'error': 'Error processing webhook'}, status=500)
+
+    elif event_dict['type'] == "payment_intent.payment_failed":
+        intent = event_dict['data']['object']
+        client_reference_id = intent.get('metadata', {}).get('client_reference_id')
+        try:
+            ticket = Ticket.objects.get(id=client_reference_id)
+            ticket.delete()
+            logger.info(f"Ticket deleted: {ticket.id}")
+        except Ticket.DoesNotExist:
+            logger.error(f"Ticket not found: {client_reference_id}")
+            return JsonResponse({'error': 'Ticket not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error deleting ticket: {e}")
+            return JsonResponse({'error': 'Error processing webhook'}, status=500)
 
     return JsonResponse({'status': 'success'})
 ##############################################################################################################
