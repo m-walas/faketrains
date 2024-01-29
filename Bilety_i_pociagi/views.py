@@ -42,34 +42,72 @@ from django.views.decorators.csrf import csrf_exempt
 #         return JsonResponse({"success": False, "error": "Błędne dane logowania"}, status=401)
 
 ######################################### STRIPE #######################################################
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 
 class CreateStripeSessionView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            unit_price = 100 
-            quantity = 1 
+            tickets = request.data.get('tickets', [])
+            logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ tickets: {tickets}")
 
-            session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=[{
+            line_items = []
+            for ticket in tickets:
+                route = ticket.get('route')
+                passenger = ticket.get('passenger')
+                train_id = ticket.get('train_id')
+                seat_number = ticket.get('seat_number')
+                price = ticket.get('price', 0)
+
+                line_item = {
                     'price_data': {
                         'currency': 'pln',
                         'product_data': {
-                            'name': 'Bilet kolejowy',
+                            'name': f'Bilet na trasę {route}, Pociąg: {train_id}, Miejsce: {seat_number}, Pasażer: {ticket["passenger"]["firstName"]} {ticket["passenger"]["lastName"]}',
                         },
-                        'unit_amount': unit_price,
+                        'unit_amount': price,
                     },
-                    'quantity': quantity,
-                }],
+                    'quantity': 1,
+                }
+                line_items.append(line_item)
+
+            if not line_items:
+                raise ValueError("Brak biletów do przetworzenia")
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=line_items,
                 mode='payment',
                 success_url=request.build_absolute_uri('/success/'),
                 cancel_url=request.build_absolute_uri('/cancel/'),
             )
-            return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_PUBLIC_KEY})
+            return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_TEST_PUBLIC_KEY})
         except Exception as e:
+            logger.error(f"❌ {e} ❌")
             return Response({"error": str(e)}, status=400)
+        
+######################################### Webhook ############################################################
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
 
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        # Nieprawidłowy payload
+        return JsonResponse({'error': 'Invalid payload'}, status=400)
+    except stripe.error.SignatureVerificationError:
+        # Nieprawidłowy podpis
+        return JsonResponse({'error': 'Invalid signature'}, status=400)
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        # Tutaj logika aktualizacji stanu rezerwacji/biletu
+        # ...
+
+    return JsonResponse({'status': 'success'})
 ##############################################################################################################
 class TicketList(APIView):
     permission_classes = [IsAuthenticated]

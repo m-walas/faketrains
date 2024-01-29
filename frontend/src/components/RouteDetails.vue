@@ -153,7 +153,6 @@
   </div>
 
   <div>
-    <!-- Dodaj PassengerForm, jeśli są wybrane miejsca -->
     <PassengerForm v-if="selectedSeats.length > 0" :selectedSeats="selectedSeats" />
   </div>
 </template>
@@ -162,8 +161,9 @@
 import { useButtonStore } from "@/store/buttonStore";
 import { useTicketStore } from "@/store/ticketStore";
 import { useRoute } from "vue-router";
-import { useRoutesStore } from "../store/routes";
+import { useRoutesStore } from "@/store/routes";
 import PassengerForm from "./PassengerForm.vue";
+import { useTransactionStore } from "@/store/transactionStore";
 export default {
   props: {
     route: Object,
@@ -177,12 +177,21 @@ export default {
   methods: {
     selectSeats() {
       const buttonStore = useButtonStore();
+      const transactionStore = useTransactionStore();
+
       buttonStore.setSelectedRouteDetails({
         trainId: this.route.train_id,
         departureDate: this.departureDate,
         departureTime: this.route.departure_time
       });
       buttonStore.setShowTrainSeats(true);
+
+      transactionStore.setTransactionDetails(
+        `${this.route.departure_city} - ${this.route.arrival_city}`,
+        this.route.train_id,
+        this.route.ticket_price,
+        [] 
+      );
     },
   },
   components: {

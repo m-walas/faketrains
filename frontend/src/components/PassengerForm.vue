@@ -20,7 +20,7 @@
                 v-model="isConfirmed"
             ></v-checkbox>
             <div class="confirm-section">
-                <v-btn color="success" @click="confirmPassengerDetails" :disabled="!isConfirmed || !allFieldsValid">
+                <v-btn color="success" @click="confirmPassengerDetails" :loading="isLoading" :disabled="!isConfirmed || isLoading || !allFieldsValid">
                     Kup
                 </v-btn>
                 <span class="timer">{{ formattedTimeLeft }}</span>
@@ -42,6 +42,7 @@
 <script>
 import { useTicketStore } from "@/store/ticketStore";
 import axios from "axios";
+import { useTransactionStore } from "@/store/transactionStore";
 
 export default {
     data() {
@@ -49,6 +50,7 @@ export default {
             timeLeft: 120,
             isConfirmed: false,
             isBlinking: false,
+            isLoading: false,
             purchaseComplete: false,
             purchaseMessage: '',
             stripe: null,
@@ -71,6 +73,10 @@ export default {
         reservationMessage() {
             return this.timeLeft <=30 ? "Czas Twojej rezerwacji zaraz minie." : "Wybrane miejsca są tymczasowo zarezerwowane.";
         },
+        totalPrice() {
+            const priceStore = usePriceStore();
+            return this.selectedSeats.length * priceStore.getPrice;
+        }
     },
     mounted() {
         this.startTimer();
@@ -93,16 +99,37 @@ export default {
             }, 1000);
         },
         initializeStripe() {
-            this.stripe = Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+            this.stripe = Stripe(import.meta.env.VITE_STRIPE_TEST_PUBLIC_KEY);
         },
         async confirmPassengerDetails() {
+            this.isLoading = true;
+            const transactionStore = useTransactionStore();
+
             try {
-                const { data } = await axios.post('/api/create_stripe_session/');
+                const ticketData = this.selectedSeats.map(seat => ({
+                    seat_number: seat.seat_number,
+                    passenger: seat.passenger,
+                    route: transactionStore.routeName,
+                    train_id: transactionStore.trainId,
+                    price: transactionStore.price * 100,
+                }));
+
+                const { data } = await axios.post('/api/create_stripe_session/', {
+                    tickets: ticketData
+                });
+
                 await this.stripe.redirectToCheckout({ sessionId: data.sessionId });
             } catch (error) {
                 console.error('Error:', error);
+                this.isLoading = false;
             }
         },
+        calculateTotalPrice() {
+            const transactionStore = useTransactionStore();
+            return this.selectedSeats.length * transactionStore.price;
+        },
+
+        // old version without stripe  //backup
         // confirmPassengerDetails() {
         //     const ticketStore = useTicketStore();
 
@@ -124,6 +151,7 @@ export default {
         //         console.error('Error:', error);
         //     });
         // },
+
         goToHomePage() {
             this.$router.push('/');
             this.clearReservationData();
@@ -132,6 +160,7 @@ export default {
             const ticketStore = useTicketStore();
             ticketStore.clearSelectedSeats();
             ticketStore.clearTicketsCount();
+            transactionStore.clearTransactionDetails();
         }
     },
     watch: {
