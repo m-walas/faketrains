@@ -79,6 +79,7 @@ class CreateStripeSessionView(APIView):
                 mode='payment',
                 success_url="https://faketrains.mwalas.pl/?success=true",
                 cancel_url="https://faketrains.mwalas.pl/?canceled=true",
+                client_reference_id=passenger.get('id'),
             )
             return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_TEST_PUBLIC_KEY})
         except Exception as e:
@@ -96,16 +97,23 @@ def stripe_webhook(request):
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
-        # Nieprawidłowy payload
         return JsonResponse({'error': 'Invalid payload'}, status=400)
     except stripe.error.SignatureVerificationError:
-        # Nieprawidłowy podpis
         return JsonResponse({'error': 'Invalid signature'}, status=400)
 
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        # Tutaj logika aktualizacji stanu rezerwacji/biletu
-        # ...
+        try:
+            ticket = Ticket.objects.get(client_reference_id=session.client_reference_id)
+            if session.payment_status == 'paid':
+                ticket.status = 'confirmed'
+                logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket purchased: {ticket}")
+            else:
+                ticket.delete()
+            ticket.save()
+        except Ticket.DoesNotExist:
+            logger.error("❌ Ticket.DoesNotExist ❌")
+            return JsonResponse({'error': 'Bilet nie został znaleziony'}, status=404)
 
     return JsonResponse({'status': 'success'})
 ##############################################################################################################
