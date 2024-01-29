@@ -51,6 +51,7 @@ export default {
             isBlinking: false,
             purchaseComplete: false,
             purchaseMessage: '',
+            stripe: null,
         };
     },
     computed: {
@@ -73,6 +74,10 @@ export default {
     },
     mounted() {
         this.startTimer();
+        const script = document.createElement('script');
+        script.src = 'https://js.stripe.com/v3/';
+        script.onload = () => this.initializeStripe();
+        document.head.appendChild(script);
     },
     methods: {
         startTimer() {
@@ -87,27 +92,38 @@ export default {
                 }
             }, 1000);
         },
-        confirmPassengerDetails() {
-            const ticketStore = useTicketStore();
-
-            const ticketsData = this.selectedSeats.map(seat => ({
-                seat_number: seat.seat_number,
-                passenger: seat.passenger, 
-            }));
-
-            axios.post('/api/confirm_reservation/', {
-                tickets: ticketsData
-            })
-            .then(response => {
-                this.purchaseComplete = true;
-                this.purchaseMessage = 'Transakcja przebiegła pomyślnie';
-
-                clearInterval(this.timerInterval);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        initializeStripe() {
+            this.stripe = Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
         },
+        async confirmPassengerDetails() {
+            try {
+                const { data } = await axios.post('/api/create_stripe_session/');
+                await this.stripe.redirectToCheckout({ sessionId: data.sessionId });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        },
+        // confirmPassengerDetails() {
+        //     const ticketStore = useTicketStore();
+
+        //     const ticketsData = this.selectedSeats.map(seat => ({
+        //         seat_number: seat.seat_number,
+        //         passenger: seat.passenger, 
+        //     }));
+
+        //     axios.post('/api/confirm_reservation/', {
+        //         tickets: ticketsData
+        //     })
+        //     .then(response => {
+        //         this.purchaseComplete = true;
+        //         this.purchaseMessage = 'Transakcja przebiegła pomyślnie';
+
+        //         clearInterval(this.timerInterval);
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //     });
+        // },
         goToHomePage() {
             this.$router.push('/');
             this.clearReservationData();

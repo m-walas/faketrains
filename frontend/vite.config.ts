@@ -31,7 +31,6 @@ export default defineConfig({
       },
     }),
   ],
-  define: { 'process.env': {} },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

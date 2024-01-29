@@ -1,9 +1,10 @@
+import os
 from django.shortcuts import render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import logout
 from .forms import CustomUserCreationForm
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django_q.tasks import schedule
 from datetime import datetime, timedelta
 from math import radians, cos, sin, sqrt, atan2
@@ -19,11 +20,14 @@ from django.utils import timezone
 from django.db import transaction
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+import stripe
+from django.conf import settings
 
 from.serializers import TicketSerializer
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 
 from logger import colored_logger as logger
+from django.views.decorators.csrf import csrf_exempt
 
 # ! backup - do not delete
 # @api_view(['POST'])
@@ -37,7 +41,36 @@ from logger import colored_logger as logger
 #     else:
 #         return JsonResponse({"success": False, "error": "Błędne dane logowania"}, status=401)
 
+######################################### STRIPE #######################################################
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
+class CreateStripeSessionView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            unit_price = 100 
+            quantity = 1 
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'pln',
+                        'product_data': {
+                            'name': 'Bilet kolejowy',
+                        },
+                        'unit_amount': unit_price,
+                    },
+                    'quantity': quantity,
+                }],
+                mode='payment',
+                success_url=request.build_absolute_uri('/success/'),
+                cancel_url=request.build_absolute_uri('/cancel/'),
+            )
+            return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_PUBLIC_KEY})
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
+
+##############################################################################################################
 class TicketList(APIView):
     permission_classes = [IsAuthenticated]
 
