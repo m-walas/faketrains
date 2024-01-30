@@ -233,6 +233,7 @@ class ReserveTicketView(APIView):
                     status='reserved',
                 )
                 logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ ticket created: {ticket.id}")
+                logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ created ticket uuid: {ticket.uuid}")
 
                 # Schedule a task to cancel the reservation after 2 minutes
                 schedule(
@@ -254,7 +255,7 @@ class ReserveTicketView(APIView):
                         "message": updated_seats
                     }
                 )
-            return Response({"message": "Miejsca zostały zarezerwowane."}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Miejsca zostały zarezerwowane.", "uuid": ticket.uuid}, status=status.HTTP_201_CREATED)
 
         except Train.DoesNotExist:
             return Response({"error": "Nie znaleziono pociągu."}, status=status.HTTP_404_NOT_FOUND)
