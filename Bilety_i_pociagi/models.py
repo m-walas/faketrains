@@ -132,4 +132,4 @@ class Ticket(models.Model):
     def __str__(self):
         train = self.seat.train
         route = train.trainroute_set.first().route
-        return f"Bilet {self.id} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()} - Czas rezerwacji: {self.reservation_time}"
+        return f"Bilet {self.id} - uuid: {self.uuid} - {self.passenger} - Miejsce: {self.seat} - Trasa: {self.schedule.train} {self.schedule.departure_city} -> {self.schedule.arrival_city} - Data i godzina odjazdu: {self.schedule.departure_time} - Ważny w: {self.valid_date} - Status: {self.get_status_display()} - Czas rezerwacji: {self.reservation_time}"
