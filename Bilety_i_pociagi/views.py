@@ -1,34 +1,40 @@
-import os
+# Django
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import logout
-from .forms import CustomUserCreationForm
 from django.http import HttpResponse, JsonResponse
 from django_q.tasks import schedule
-from datetime import datetime, timedelta
-from math import radians, cos, sin, sqrt, atan2
+from django.db import transaction
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
+# Django Rest Framework
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
-from django.views.decorators.http import require_POST
+
+# additional imports
+from datetime import datetime, timedelta
+from math import radians, cos, sin, sqrt, atan2
 import json
-import uuid
 import datetime as dt
-from django.utils import timezone
-from django.db import transaction
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import stripe
 from django.conf import settings
 
-from.serializers import TicketSerializer
+# application imports
+from .forms import CustomUserCreationForm
+from .serializers import TicketSerializer
 from .models import Train, Schedule, TrainRoute, TicketPrice, Route, City, Seat, Ticket
 
+# Logger
 from logger import colored_logger as logger
-from django.views.decorators.csrf import csrf_exempt
+
 
 # ! backup - do not delete
 # @api_view(['POST'])

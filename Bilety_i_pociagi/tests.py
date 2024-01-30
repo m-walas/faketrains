@@ -1,9 +1,9 @@
-from django.test import TestCase
-from Bilety_i_pociagi.models import Ticket, Seat, Schedule, Train, Route, TicketPrice, CustomUser
-from django.contrib.auth import get_user_model
-from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
+from Bilety_i_pociagi.models import CustomUser, Route, Schedule, Seat, Ticket, TicketPrice, Train
 
 class TicketModelTest(TestCase):
     
