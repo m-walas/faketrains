@@ -10,12 +10,14 @@ export const useTransactionStore = defineStore('transactionStore', {
         selectedSeats: [],
     }),
     actions: {
-        setTransactionDetails(uuid, routeName, trainId, price, selectedSeats) {
-            this.uuid = uuid;
+        setTransactionDetails(routeName, trainId, price, selectedSeats) {
             this.routeName = routeName;
             this.trainId = trainId;
             this.price = price;
             this.selectedSeats = selectedSeats;
+        },
+        setTransactionUUID(uuid) {
+            this.uuid = uuid;
         },
         clearTransactionDetails() {
             this.uuid = '';

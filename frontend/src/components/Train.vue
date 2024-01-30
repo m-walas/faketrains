@@ -129,7 +129,7 @@ export default {
 
           // Używamy `transactionStore`, aby zapisać `uuid`
           const transactionStore = useTransactionStore();
-          transactionStore.setUuid(uuidFromResponse);
+          transactionStore.setTransactionUUID(uuidFromResponse);
 
           // this.sendMessage(response.data.seats);
           console.log("Miejsca zostały zarezerwowane");
