@@ -54,22 +54,17 @@ class CreateStripeSessionView(APIView):
             line_items = []
             session_metadata = {}
 
-            for index, ticket in enumerate(tickets):
-                ticket_uuid = ticket.get('uuid') 
+            for index, ticket_data in enumerate(tickets):
+                ticket_uuid = ticket_data.get('uuid')
                 session_metadata[f'ticket_uuid_{index}'] = ticket_uuid
-                route = ticket.get('route')
-                passenger = ticket.get('passenger')
-                train_id = ticket.get('train_id')
-                seat_number = ticket.get('seat_number')
-                price = ticket.get('price', 0)
 
                 line_item = {
                     'price_data': {
                         'currency': 'pln',
                         'product_data': {
-                            'name': f'Bilet na trasę {route}, Pociąg: {train_id}, Miejsce: {seat_number}, Pasażer: {ticket["passenger"]["firstName"]} {ticket["passenger"]["lastName"]}',
+                            'name': f"Bilet na trasę {ticket_data.get('route')}, Pociąg: {ticket_data.get('train_id')}, Miejsce: {ticket_data.get('seat_number')}, Pasażer: {ticket_data.get('passenger').get('firstName')} {ticket_data.get('passenger').get('lastName')}",
                         },
-                        'unit_amount': price,
+                        'unit_amount': ticket_data.get('price', 0),
                     },
                     'quantity': 1,
                 }
