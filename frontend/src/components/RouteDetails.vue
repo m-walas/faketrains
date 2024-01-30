@@ -179,8 +179,6 @@ export default {
       const buttonStore = useButtonStore();
       const transactionStore = useTransactionStore();
 
-      const ticketUuid = this.route.first_leg.ticket.uuid;
-
       buttonStore.setSelectedRouteDetails({
         trainId: this.route.train_id,
         departureDate: this.departureDate,
@@ -189,7 +187,6 @@ export default {
       buttonStore.setShowTrainSeats(true);
 
       transactionStore.setTransactionDetails(
-        ticketUuid,
         `${this.route.departure_city} - ${this.route.arrival_city}`,
         this.route.train_id,
         this.route.ticket_price,

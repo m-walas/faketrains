@@ -43,6 +43,7 @@
 import axios from 'axios';
 import { useButtonStore } from "@/store/buttonStore";
 import { useTicketStore } from "@/store/ticketStore";
+import { useTransactionStore } from "@/store/transactionStore";
 
 export default {
   props: {
@@ -123,6 +124,13 @@ export default {
               departureTime: this.departureTime,
               seats: seatNumbers,
           });
+          // Otrzymujemy `uuid` z odpowiedzi z serwera
+          const uuidFromResponse = response.data.uuid;
+
+          // Używamy `transactionStore`, aby zapisać `uuid`
+          const transactionStore = useTransactionStore();
+          transactionStore.setUuid(uuidFromResponse);
+
           // this.sendMessage(response.data.seats);
           console.log("Miejsca zostały zarezerwowane");
       } catch (error) {
