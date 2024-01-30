@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.http import require_POST
 import json
+import uuid
 import datetime as dt
 from django.utils import timezone
 from django.db import transaction
@@ -51,7 +52,11 @@ class CreateStripeSessionView(APIView):
             logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ tickets: {tickets}")
 
             line_items = []
-            for ticket in tickets:
+            session_metadata = {}
+
+            for index, ticket in enumerate(tickets):
+                ticket_uuid = ticket.get('uuid') 
+                session_metadata[f'ticket_uuid_{index}'] = ticket_uuid
                 route = ticket.get('route')
                 passenger = ticket.get('passenger')
                 train_id = ticket.get('train_id')
@@ -79,7 +84,7 @@ class CreateStripeSessionView(APIView):
                 mode='payment',
                 success_url="https://faketrains.mwalas.pl/?success=true",
                 cancel_url="https://faketrains.mwalas.pl/?canceled=true",
-                client_reference_id=passenger.get('id'),
+                metadata=session_metadata,
             )
             return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_TEST_PUBLIC_KEY})
         except Exception as e:
@@ -91,52 +96,42 @@ class CreateStripeSessionView(APIView):
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ webhook received: {payload}")
 
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError as e:
-        logger.error(f"Invalid payload: {e}")
+    except ValueError:
+        logger.error("Invalid payload")
         return JsonResponse({'error': 'Invalid payload'}, status=400)
-    except stripe.error.SignatureVerificationError as e:
-        logger.error(f"Invalid signature: {e}")
+    except stripe.error.SignatureVerificationError:
+        logger.error("Invalid signature")
         return JsonResponse({'error': 'Invalid signature'}, status=400)
 
     event_dict = event.to_dict()
 
-    if event_dict['type'] == "checkout.session.completed":
-        session = event_dict['data']['object']
-        client_reference_id = session.get('client_reference_id')
-        try:
-            ticket = Ticket.objects.get(id=client_reference_id)
-            if session.payment_status == 'paid':
-                ticket.status = 'confirmed'
-                ticket.save()
-                logger.info(f"Ticket confirmed: {ticket.id}")
-            else:
-                # Można również obsłużyć inne statusy płatności
-                logger.info(f"Session payment status: {session.payment_status}")
-        except Ticket.DoesNotExist:
-            logger.error(f"Ticket not found: {client_reference_id}")
-            return JsonResponse({'error': 'Ticket not found'}, status=404)
-        except Exception as e:
-            logger.error(f"Error updating ticket: {e}")
-            return JsonResponse({'error': 'Error processing webhook'}, status=500)
-
-    elif event_dict['type'] == "payment_intent.payment_failed":
+    if event_dict['type'] in ["payment_intent.succeeded", "payment_intent.payment_failed"]:
         intent = event_dict['data']['object']
-        client_reference_id = intent.get('metadata', {}).get('client_reference_id')
-        try:
-            ticket = Ticket.objects.get(id=client_reference_id)
-            ticket.delete()
-            logger.info(f"Ticket deleted: {ticket.id}")
-        except Ticket.DoesNotExist:
-            logger.error(f"Ticket not found: {client_reference_id}")
-            return JsonResponse({'error': 'Ticket not found'}, status=404)
-        except Exception as e:
-            logger.error(f"Error deleting ticket: {e}")
-            return JsonResponse({'error': 'Error processing webhook'}, status=500)
+        metadata = intent.get('metadata', {})
+
+        for key, ticket_uuid in metadata.items():
+            if key.startswith('ticket_uuid_'):
+                try:
+                    ticket = Ticket.objects.get(uuid=ticket_uuid)
+                    if event_dict['type'] == "payment_intent.succeeded":
+                        ticket.status = 'confirmed'
+                        logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket purchased: {ticket}")
+                    else:
+                        ticket.delete()
+                        logger.error(f"Failed: {intent['id']}")
+                    ticket.save()
+                except Ticket.DoesNotExist:
+                    logger.error(f"Ticket not found: {ticket_uuid}")
+                    return JsonResponse({'error': 'Ticket not found'}, status=404)
+                except Exception as e:
+                    logger.error(f"Error updating ticket: {e}")
+                    return JsonResponse({'error': 'Error processing webhook'}, status=500)
 
     return JsonResponse({'status': 'success'})
 ##############################################################################################################
