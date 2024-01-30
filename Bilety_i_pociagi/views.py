@@ -82,7 +82,7 @@ class CreateStripeSessionView(APIView):
                 line_items=line_items,
                 mode='payment',
                 success_url = f"https://nginx.mwalas.pl/stripe/update_ticket_status?uuids={uuids_param}&redirect=true",
-                cancel_url="https://faketrains.mwalas.pl/canceled",
+                cancel_url= f"https://nginx.mwalas.pl/stripe/cancel_reservation_status?uuids={uuids_param}",
                 metadata=session_metadata,
             )
             logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ session_metadata: {session_metadata}")
@@ -157,7 +157,7 @@ def stripe_webhook(request):
     return JsonResponse({'status': 'success', 'type': event_dict['type']})
 
 ##############################################################################################################
-#####? update ticket status after successful payment - its alternative for webhook
+#####? update ticket status after successful payment or failed payment - its alternative for webhook
 
 def update_ticket_status(request):
     uuids = request.GET.get('uuids')
@@ -166,16 +166,50 @@ def update_ticket_status(request):
         for ticket_uuid in uuid_list:
             try:
                 ticket = Ticket.objects.get(uuid=ticket_uuid)
-                ticket.status = 'confirmed'
-                ticket.save()
+
+                if ticket.status == 'reserved':
+                    ticket.status = 'confirmed'
+                    ticket.save()
+                    logger.info(f"🚀 ~ file: views.py ~ update_ticket_status ~ Ticket purchased: {ticket}")
+                else:
+                    logger.warning(f" Ticket not in reserved status: {ticket} ")
+
             except Ticket.DoesNotExist:
-                pass
-        logger.info(f"🚀 ~ file: views.py ~ update_ticket_status ~ Tickets purchased: {uuid_list}")
+                logger.error(f"❌ Ticket not found: {ticket_uuid}")
+                continue
+
         if 'redirect' in request.GET:
             return redirect("https://faketrains.mwalas.pl/success")
     else:
         logger.error("❌ No ticket uuids to update ❌")
         return HttpResponse("Brak identyfikatorów biletów do aktualizacji.")
+
+    return HttpResponse("Zakończono aktualizację biletów.")
+
+###
+def cancel_reservation_status(request):
+    uuids = request.GET.get('uuids')
+    if uuids:
+        uuid_list = uuids.split(',')
+        for ticket_uuid in uuid_list:
+            try:
+                ticket = Ticket.objects.get(uuid=ticket_uuid)
+
+                if ticket.status == 'reserved':
+                    ticket.delete()
+                    logger.info(f"🚀 ~ file: views.py ~ cancel_reservation_status ~ Ticket cancelled and deleted: {ticket_uuid}")
+                else:
+                    logger.warning(f" Ticket not in reserved status: {ticket} ")
+
+            except Ticket.DoesNotExist:
+                logger.error(f"❌ Ticket not found: {ticket_uuid}")
+                continue 
+    else:
+        logger.error("❌ No ticket uuids to cancel ❌")
+        return HttpResponse("Brak identyfikatorów biletów do anulowania.")
+
+    return redirect("https://faketrains.mwalas.pl/cancellation_success")
+
 ##############################################################################################################
 
 

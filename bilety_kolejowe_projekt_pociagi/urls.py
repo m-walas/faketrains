@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 #? serializers
 
 from Bilety_i_pociagi.views import TicketList, city_search_view, user_profile, logout_view, user_status, register_view, receive_selected_route, get_train_seats_with_availability
-from Bilety_i_pociagi.views import ReserveTicketView, confirm_reservation, stripe_webhook, update_ticket_status
+from Bilety_i_pociagi.views import ReserveTicketView, confirm_reservation, stripe_webhook, update_ticket_status, cancel_reservation_status
 from Bilety_i_pociagi.views import CreateStripeSessionView, ListAPIEndpoints, index, SignUpView, search_trains
 
 urlpatterns = [
@@ -34,7 +34,7 @@ urlpatterns = [
     path('api/create_stripe_session/', CreateStripeSessionView.as_view(), name='create_stripe_session'),
 
     path('stripe/update_ticket_status/', update_ticket_status, name='update_ticket_status'),
-    # path('canceled', your_cancel_view, name='cancel-ticket'),
+    path('stripe/cancel_reservation_status/', cancel_reservation_status, name='cancel_reservation_status'),
     
     path('wh/stripe_webhook/', stripe_webhook, name='stripe_webhook'),
 ]
