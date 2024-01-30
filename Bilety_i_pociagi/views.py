@@ -81,7 +81,7 @@ class CreateStripeSessionView(APIView):
                 payment_method_types=['card'],
                 line_items=line_items,
                 mode='payment',
-                success_url = f"https://faketrains.mwalas.pl/stripe/update_ticket_status?uuids={uuids_param}&redirect=true",
+                success_url = f"https://nginx.mwalas.pl/stripe/update_ticket_status?uuids={uuids_param}&redirect=true",
                 cancel_url="https://faketrains.mwalas.pl/canceled",
                 metadata=session_metadata,
             )
