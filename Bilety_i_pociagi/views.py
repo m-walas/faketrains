@@ -56,6 +56,7 @@ class CreateStripeSessionView(APIView):
 
             for index, ticket_data in enumerate(tickets):
                 ticket_uuid = ticket_data.get('uuid')
+                logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ ticket_uuid: {ticket_uuid}")
                 session_metadata[f'ticket_uuid_{index}'] = ticket_uuid
 
                 line_item = {

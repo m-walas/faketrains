@@ -107,7 +107,7 @@ export default {
 
             try {
                 const ticketData = this.selectedSeats.map(seat => ({
-                    uuid: seat.uuid,
+                    uuid: transactionStore.uuid,
                     seat_number: seat.seat_number,
                     passenger: seat.passenger,
                     route: transactionStore.routeName,
