@@ -33,7 +33,7 @@ urlpatterns = [
     path('api/confirm_reservation/', confirm_reservation, name='confirm_reservation'),
     path('api/create_stripe_session/', CreateStripeSessionView.as_view(), name='create_stripe_session'),
 
-    path('success/', update_ticket_status, name='update_ticket_status'),
+    path('stripe/update_ticket_status/', update_ticket_status, name='update_ticket_status'),
     # path('canceled', your_cancel_view, name='cancel-ticket'),
     
     path('wh/stripe_webhook/', stripe_webhook, name='stripe_webhook'),

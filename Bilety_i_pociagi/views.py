@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, get_resolver
 from django.views import generic
 from django.contrib.auth import logout
@@ -81,7 +81,7 @@ class CreateStripeSessionView(APIView):
                 payment_method_types=['card'],
                 line_items=line_items,
                 mode='payment',
-                success_url=f"https://faketrains.mwalas.pl/success?uuids={uuids_param}",
+                success_url = f"https://faketrains.mwalas.pl/stripe/update_ticket_status?uuids={uuids_param}&redirect=true",
                 cancel_url="https://faketrains.mwalas.pl/canceled",
                 metadata=session_metadata,
             )
@@ -111,14 +111,14 @@ def stripe_webhook(request):
         return JsonResponse({'error': 'Invalid signature'}, status=400)
 
     event_dict = event.to_dict()
-    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event type: {event_dict['type']}")
-    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event_dict: {event_dict}")
+    # logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event type: {event_dict['type']}")
+    # logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event_dict: {event_dict}")
 
 
     if event_dict['type'] == "payment_intent.succeeded":
         intent = event_dict['data']['object']
         metadata = intent.get('metadata', {})
-        logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ metadata: {metadata}")
+        # logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ metadata: {metadata}")
 
         for key, ticket_uuid in metadata.items():
             if key.startswith('ticket_uuid_'):
@@ -155,6 +155,7 @@ def stripe_webhook(request):
 
     # Return a response to acknowledge receipt of the event and type of event
     return JsonResponse({'status': 'success', 'type': event_dict['type']})
+
 ##############################################################################################################
 #####? update ticket status after successful payment - its alternative for webhook
 
@@ -170,7 +171,8 @@ def update_ticket_status(request):
             except Ticket.DoesNotExist:
                 pass
         logger.info(f"🚀 ~ file: views.py ~ update_ticket_status ~ Tickets purchased: {uuid_list}")
-        return HttpResponse("Bilety zostały pomyślnie zakupione.")
+        if 'redirect' in request.GET:
+            return redirect("https://faketrains.mwalas.pl/success")
     else:
         logger.error("❌ No ticket uuids to update ❌")
         return HttpResponse("Brak identyfikatorów biletów do aktualizacji.")
