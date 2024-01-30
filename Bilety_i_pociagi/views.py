@@ -53,10 +53,12 @@ class CreateStripeSessionView(APIView):
 
             line_items = []
             session_metadata = {}
+            uuid_list = []
 
             for index, ticket_data in enumerate(tickets):
                 ticket_uuid = ticket_data.get('uuid')
                 logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ ticket_uuid: {ticket_uuid}")
+                uuid_list.append(ticket_uuid)
                 session_metadata[f'ticket_uuid_{index}'] = ticket_uuid
 
                 line_item = {
@@ -74,25 +76,28 @@ class CreateStripeSessionView(APIView):
             if not line_items:
                 raise ValueError("Brak biletów do przetworzenia")
 
+            uuids_param = ','.join(uuid_list)
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=line_items,
                 mode='payment',
-                success_url="https://faketrains.mwalas.pl/?success=true",
-                cancel_url="https://faketrains.mwalas.pl/?canceled=true",
+                success_url=f"https://faketrains.mwalas.pl/success?uuids={uuids_param}",
+                cancel_url="https://faketrains.mwalas.pl/canceled",
                 metadata=session_metadata,
             )
+            logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ session_metadata: {session_metadata}")
             return Response({'sessionId': session.id, 'stripePublicKey': settings.STRIPE_TEST_PUBLIC_KEY})
         except Exception as e:
             logger.error(f"❌ {e} ❌")
             return Response({"error": str(e)}, status=400)
         
 ######################################### Webhook ############################################################
+        #! NOT USED - DO NOT DELETE - IN THE FUTURE MAYBE
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ webhook received: {payload}")
+    # logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ webhook received: {payload}")
 
     try:
         event = stripe.Webhook.construct_event(
@@ -106,31 +111,72 @@ def stripe_webhook(request):
         return JsonResponse({'error': 'Invalid signature'}, status=400)
 
     event_dict = event.to_dict()
+    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event type: {event_dict['type']}")
+    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ event_dict: {event_dict}")
 
-    if event_dict['type'] in ["payment_intent.succeeded", "payment_intent.payment_failed"]:
+
+    if event_dict['type'] == "payment_intent.succeeded":
+        intent = event_dict['data']['object']
+        metadata = intent.get('metadata', {})
+        logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ metadata: {metadata}")
+
+        for key, ticket_uuid in metadata.items():
+            if key.startswith('ticket_uuid_'):
+                try:
+                    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ ticket_uuid: {ticket_uuid}")
+                    ticket = Ticket.objects.get(uuid=ticket_uuid)
+                    ticket.status = 'confirmed'
+                    ticket.save()
+                    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket purchased: {ticket}")
+                except Ticket.DoesNotExist:
+                    logger.error(f"Ticket not found: {ticket_uuid}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Error updating ticket: {e}")
+                    continue
+
+    elif event_dict['type'] == "payment_intent.payment_failed":
         intent = event_dict['data']['object']
         metadata = intent.get('metadata', {})
 
         for key, ticket_uuid in metadata.items():
             if key.startswith('ticket_uuid_'):
                 try:
+                    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ ticket_uuid: {ticket_uuid}")
                     ticket = Ticket.objects.get(uuid=ticket_uuid)
-                    if event_dict['type'] == "payment_intent.succeeded":
-                        ticket.status = 'confirmed'
-                        logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket purchased: {ticket}")
-                    else:
-                        ticket.delete()
-                        logger.error(f"Failed: {intent['id']}")
-                    ticket.save()
+                    ticket.delete()
+                    logger.info(f"🚀 ~ file: views.py ~ stripe_webhook ~ Ticket deleted: {ticket}")
                 except Ticket.DoesNotExist:
                     logger.error(f"Ticket not found: {ticket_uuid}")
-                    return JsonResponse({'error': 'Ticket not found'}, status=404)
+                    continue
                 except Exception as e:
-                    logger.error(f"Error updating ticket: {e}")
-                    return JsonResponse({'error': 'Error processing webhook'}, status=500)
+                    logger.error(f"Error deleting ticket: {e}")
+                    continue
 
-    return JsonResponse({'status': 'success'})
+    # Return a response to acknowledge receipt of the event and type of event
+    return JsonResponse({'status': 'success', 'type': event_dict['type']})
 ##############################################################################################################
+#####? update ticket status after successful payment - its alternative for webhook
+
+def update_ticket_status(request):
+    uuids = request.GET.get('uuids')
+    if uuids:
+        uuid_list = uuids.split(',')
+        for ticket_uuid in uuid_list:
+            try:
+                ticket = Ticket.objects.get(uuid=ticket_uuid)
+                ticket.status = 'confirmed'
+                ticket.save()
+            except Ticket.DoesNotExist:
+                pass
+        logger.info(f"🚀 ~ file: views.py ~ update_ticket_status ~ Tickets purchased: {uuid_list}")
+        return HttpResponse("Bilety zostały pomyślnie zakupione.")
+    else:
+        logger.error("❌ No ticket uuids to update ❌")
+        return HttpResponse("Brak identyfikatorów biletów do aktualizacji.")
+##############################################################################################################
+
+
 class TicketList(APIView):
     permission_classes = [IsAuthenticated]
 
