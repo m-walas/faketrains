@@ -9,7 +9,7 @@
 
           <v-card-text>
             <Multiselect
-              class = "autocomplete-field"
+              class = "autocomplete-field multiselect-text" 
               v-model="selectedCityFrom"
               :options="cities"
               placeholder="Wybierz miasto początkowe"
@@ -19,7 +19,7 @@
               @update:modelValue="handleCityFromChange"
             />
             <Multiselect
-              class = "autocomplete-field"
+              class = "autocomplete-field multiselect-text"
               v-model="selectedCityTo"
               :options="cities"
               placeholder="Wybierz miasto docelowe"
@@ -118,6 +118,10 @@
   margin-bottom: 10px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   min-width: 250px;
+}
+
+.multiselect-text {
+  color: #000;
 }
 
 .autocomplete-field:hover, .date-field:hover {
