@@ -229,14 +229,14 @@ export default {
 
 .train_id {
   font-style: italic;
-  color: #1976d2;
+  color: #ff2770;
   margin-bottom: 15px;
   font-size: 12px;
 }
 
 .details-heading {
   font-weight: bold;
-  color: #1976d2;
+  color: #ff2770;
   margin-bottom: 10px;
 }
 
@@ -284,7 +284,7 @@ select {
 
 select:focus {
   outline: none;
-  border-color: #0056b3;
+  border-color: #fa1561;
 }
 
 .ticket-options {
@@ -302,13 +302,13 @@ select:focus {
 
 .button-choose-seat {
   margin-top: 25px;
-  background-color: #0056b3;
+  background-color: #fa1561;
   color: white;
   text-transform: uppercase;
   font-weight: bold;
 }
 
 .button-choose-seat:hover {
-  background-color: #003d82;
+  background-color: #a40238;
 }
 </style>

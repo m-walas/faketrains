@@ -1,5 +1,5 @@
 <template>
-    <v-footer class="footer">
+    <v-footer class="footer custom-footer">
       <v-container>
         <v-row justify="center" align="center">
           <v-col cols="12" class="text-center">
@@ -10,15 +10,18 @@
     </v-footer>
 </template>
 
+<style>
+.custom-footer {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+</style>
 
 <style scoped>
 .footer {
   padding: 20px 0;
-  background-color: #FFF;
-  color: #333;
+  color: #fff;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
   font-size: 0.9rem;
-  width: 100%;
-  max-height: 5%;
+  max-height: 45px;
 }
 </style>

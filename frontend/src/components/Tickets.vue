@@ -107,6 +107,6 @@ export default {
 }
 
 .ticket-info {
-  color: #1976d2;
+  color: #ff2770;
 }
 </style>

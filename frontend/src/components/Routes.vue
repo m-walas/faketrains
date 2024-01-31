@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container fill-height fluid>
         <div class="route-info" v-if="schedules.length > 0">
         <h2>{{ schedules[0].departure_city }} - {{ schedules[0].arrival_city }}</h2>
         </div>
@@ -39,10 +39,21 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+.v-container.fill-height {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.routes-container {
+  flex-grow: 1;
+}
+
 .route-info {
   text-align: center;
   margin-bottom: 20px;
   margin-top: 50px;
+  color: #ff2770;
 }
 
 .carousel-container {
@@ -103,7 +114,7 @@ body {
 }
 
 .v-btn:hover {
-  background-color: #0056b3;
+  background-color: #ff2770;
   color: white;
 }
 

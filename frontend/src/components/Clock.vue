@@ -9,7 +9,7 @@
 <style scoped>
 .clock {
   font-family: 'Roboto', 'Arial', sans-serif;
-  color: #333;
+  color: #fff;
   background-color: transparent;
   padding: 5px 10px;
   border-radius: 5px;
@@ -24,7 +24,7 @@
 }
 
 .clock:hover {
-  background-color: #eaeaea;
+  background-color: #16030a;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 </style>

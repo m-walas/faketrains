@@ -1,7 +1,8 @@
 <template>
-    <v-app>
+  <v-app>
+    <v-parallax src="@/assets/tlo.jpg" height="100%">
       <AppBar></AppBar>
-      <v-main>
+      <v-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="fade-zoom" mode="out-in">
             <component :is="Component" />
@@ -9,10 +10,22 @@
         </router-view>
       </v-main>
       <Footer></Footer>
-    </v-app>
+    </v-parallax>
+  </v-app>
 </template>
 
+<style>
+.main-content {
+  flex-grow: 1;
+}
+</style>
+
 <style scoped>
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -21,7 +34,7 @@
 
 .v-main {
   flex: 1;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: transparent;
 }
 
 .fade-zoom-enter-active,

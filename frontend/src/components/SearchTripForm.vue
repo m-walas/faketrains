@@ -2,7 +2,6 @@
   <v-container fluid class="main-container">
     <v-row>
       <v-col cols="12" class="image-col">
-        <v-img src="../assets/tlo.jpg" class="background" :style="{ height: '100vh' }"></v-img>
 
         <v-card class="form-card">
           <v-card-title class="headline font-weight-bold mb-2">Znajdź Połączenie</v-card-title>
@@ -38,7 +37,7 @@
 
           <v-divider></v-divider>
           <v-card-actions>
-            <v-btn color="primary" :disabled="!canSearch" @click="search">Szukaj</v-btn>
+            <v-btn :disabled="!canSearch" @click="search">Szukaj</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -51,18 +50,19 @@
       <v-card-text>Brak dostępnych tras dla podanych kryteriów.</v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="noRoutesDialog = false">OK</v-btn>
+        <v-btn text @click="noRoutesDialog = false">OK</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="transactionModal.show" persistent max-width="300px">
-    <v-card>
+  <v-dialog v-model="transactionModal.show" persistent max-width="350px">
+    <v-card :class="{ 'transaction-dialog': true, 'success-dialog': transactionModal.isSuccess, 'error-dialog': !transactionModal.isSuccess }">
       <v-card-title class="headline">{{ transactionModal.title }}</v-card-title>
       <v-card-text>{{ transactionModal.message }}</v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="transactionModal.show = false">OK</v-btn>
+        <v-btn text @click="transactionModal.show = false">OK</v-btn>
+        <v-btn v-if="transactionModal.isSuccess" class="green" text @click="goToProfile">Przejdź do profilu</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -74,15 +74,6 @@
   min-height: 100vh;
 }
 
-.background {
-  width: 100%;
-  background-size: cover;
-  background-attachment: fixed;
-  /* position: absolute; */
-  left: 0;
-  top: 0;
-}
-
 .image-col {
   display: flex;
   align-items: center;
@@ -92,7 +83,7 @@
 }
 
 .form-card {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -102,7 +93,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 24px;
@@ -118,7 +110,9 @@
 }
 
 .autocomplete-field, .date-field {
-  border: 1px solid #ccc;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff; 
+  border: 1px solid #090a0b;
   border-radius: 4px;
   padding: 10px 15px;
   margin-bottom: 10px;
@@ -131,24 +125,42 @@
 }
 
 .autocomplete-field:focus, .date-field:focus {
-  border-color: #3d73da;
+  border-color: #ff2770;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.v-autocomplete-field:focus-within .v-label, .v-text-field:focus-within .v-label {
-  transform: translateX(10px);
+.transaction-dialog {
+  border-radius: 10px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 1);
+  border-left: 5px solid;
 }
 
-.v-btn {
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+.success-dialog {
+  border-color: #4caf50;
+}
+
+.error-dialog {
+  border-color: #f44336;
+}
+
+.v-card-actions .green {
+  color: #4caf50;
+  transition: transform 0.3s ease;
+}
+
+.v-card-actions .green:hover {
+  transform: translateY(-2px);
 }
 
 .v-btn:hover {
-  background-color: #3d73da;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+}
+
+.v-card-title {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 </style>
 
@@ -173,6 +185,7 @@ export default defineComponent({
         show: false,
         title: '',
         message: '',
+        isSuccess: false,
       },
       canSearch: false,
     };
@@ -195,6 +208,10 @@ export default defineComponent({
     },
     handleCityToChange(value) {
       this.selectedCityTo = value;
+    },
+    goToProfile() {
+      this.transactionModal.show = false;
+      this.$router.push('/profile');
     },
     search() {
       // console.log("selectedCityFrom.value: ", this.selectedCityFrom);
@@ -231,10 +248,12 @@ export default defineComponent({
         this.transactionModal.show = true;
         this.transactionModal.title = 'Sukces!';
         this.transactionModal.message = 'Twój bilet został pomyślnie zakupiony.';
+        this.transactionModal.isSuccess = true;
       } else if (status === 'canceled') {
         this.transactionModal.show = true;
         this.transactionModal.title = 'Anulowano!';
         this.transactionModal.message = 'Twoja rezerwacja została anulowana.';
+        this.transactionModal.isSuccess = false;
       }
     },
   },

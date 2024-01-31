@@ -63,7 +63,7 @@ margin-bottom: 10px;
 
 .leg-info, .route-info {
 font-weight: bold;
-color: #1976d2;
+color: #ff2770;
 margin-top: 10px;
 }
 

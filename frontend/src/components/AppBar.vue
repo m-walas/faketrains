@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app class="animated fadeIn">
+  <v-app-bar app class="animated fadeIn custom-app-bar">
     <v-toolbar-title @click="goToHome" class="app-bar-title">
       FakeTrains
     </v-toolbar-title>
@@ -33,6 +33,11 @@
   </v-snackbar>
 </template>
 
+<style>
+.custom-app-bar {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+</style>
 
 <style scoped>
 .app-bar-content {
@@ -44,6 +49,7 @@
 
 .app-bar-title {
   font-family: 'Segoe UI', sans-serif;
+  color: #fff;
   cursor: pointer;
   font-size: 2rem;
   transition: color 0.3s ease;
@@ -56,10 +62,12 @@
 .user-info {
   margin-right: 10px;
   font-weight: bold;
+  color: #fff;
 }
 
 .v-btn {
   margin-left: 10px;
+  color: #fff;
   transition: transform 0.2s ease-in-out;
 }
 

@@ -251,21 +251,21 @@ methods: {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to right, #e2e2e2, #ffc9e8);
+    background: transparent !important;
     height: 100vh;
     flex-direction: column;
     align-items: center;
 }
 
 .container {
-    background-color: #fff;
+    background-color: rgb(0, 0, 0, 0.8);
     border-radius: 30px;
     box-shadow: 0 5px 15px rgb(0, 0, 0, 0.35);
     position: relative;
     overflow: hidden;
     width: 2200px;
     max-width: 100%;
-    min-height: 480px;
+    min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -412,13 +412,13 @@ methods: {
 }
 
 .auth-card {
-background-color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);
 backdrop-filter: blur(10px);
 padding: 20px;
 max-width: 400px;
 width: 100%;
 border: none;
-border-radius: 0px;
+border-radius: 15px;
 box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
@@ -426,7 +426,7 @@ box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 background-color: transparent;
 border-radius: 8px;
 transition: box-shadow 0.2s ease-in-out;
-color: #000;
+color: #fff;
 font-size: 13px;
 padding: 2px 5px;
 }
@@ -469,6 +469,6 @@ transform: translateY(-2px);
     font-size: 25px;
     margin-left: 15px;
     padding: 15px;
-    background-color: #fff;
+    background-color: transparent;
 }
 </style>
