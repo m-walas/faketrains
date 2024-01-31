@@ -124,14 +124,11 @@ export default {
               departureTime: this.departureTime,
               seats: seatNumbers,
           });
-          // Otrzymujemy `uuid` z odpowiedzi z serwera
           const uuidFromResponse = response.data.uuid;
 
-          // Używamy `transactionStore`, aby zapisać `uuid`
           const transactionStore = useTransactionStore();
           transactionStore.setTransactionUUID(uuidFromResponse);
 
-          // this.sendMessage(response.data.seats);
           console.log("Miejsca zostały zarezerwowane");
       } catch (error) {
           console.error('Error while reserving seats:', error);

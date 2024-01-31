@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 
 export const useTransactionStore = defineStore('transactionStore', {
     state: () => ({
-        uuid: [],
+        uuid: '',
         routeName: '',
         trainId: '',
         price: 0,
@@ -20,7 +20,7 @@ export const useTransactionStore = defineStore('transactionStore', {
             this.uuid = uuid;
         },
         clearTransactionDetails() {
-            this.uuid = [];
+            this.uuid = '';
             this.routeName = '';
             this.trainId = '';
             this.price = 0;

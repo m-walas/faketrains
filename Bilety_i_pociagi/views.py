@@ -61,11 +61,13 @@ class CreateStripeSessionView(APIView):
             session_metadata = {}
             uuid_list = []
 
-            for index, ticket_data in enumerate(tickets):
-                ticket_uuid = ticket_data.get('uuid')
-                logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ ticket_uuid: {ticket_uuid}")
-                uuid_list.append(ticket_uuid)
-                session_metadata[f'ticket_uuid_{index}'] = ticket_uuid
+            for ticket_data in tickets:
+                ticket_uuids = ticket_data.get('uuid', [])
+                logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ ticket_uuids: {ticket_uuids}")
+                for uuid in ticket_uuids:
+                    uuid_list.append(uuid)
+                    index = uuid_list.index(uuid)
+                    session_metadata[f'ticket_uuid_{index}'] = uuid
 
                 line_item = {
                     'price_data': {
@@ -83,6 +85,8 @@ class CreateStripeSessionView(APIView):
                 raise ValueError("Brak biletów do przetworzenia")
 
             uuids_param = ','.join(uuid_list)
+            logger.info(f"🚀 ~ file: views.py ~ CreateStripeSessionView ~ uuids_param: {uuids_param}")
+
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=line_items,
@@ -322,7 +326,7 @@ class ReserveTicketView(APIView):
                     schedule=_schedule,
                     status='reserved',
                 )
-                ticket_uuids.append(ticket.uuid)
+                ticket_uuids.append(str(ticket.uuid))
                 logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ ticket created: {ticket.id}")
                 logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ created ticket uuid: {ticket.uuid}")
 
@@ -346,6 +350,7 @@ class ReserveTicketView(APIView):
                         "message": updated_seats
                     }
                 )
+            logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ uuid: {ticket_uuids}")
             return Response({"message": "Miejsca zostały zarezerwowane.", "uuid": ticket_uuids}, status=status.HTTP_201_CREATED)
 
         except Train.DoesNotExist:
