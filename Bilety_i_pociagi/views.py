@@ -185,7 +185,7 @@ def update_ticket_status(request):
                 continue
 
         if 'redirect' in request.GET:
-            return redirect("https://faketrains.mwalas.pl/success")
+            return redirect("https://faketrains.mwalas.pl/?status=success")
     else:
         logger.error("❌ No ticket uuids to update ❌")
         return HttpResponse("Brak identyfikatorów biletów do aktualizacji.")
@@ -214,7 +214,7 @@ def cancel_reservation_status(request):
         logger.error("❌ No ticket uuids to cancel ❌")
         return HttpResponse("Brak identyfikatorów biletów do anulowania.")
 
-    return redirect("https://faketrains.mwalas.pl/cancellation_success")
+    return redirect("https://faketrains.mwalas.pl/?status=canceled")
 
 ##############################################################################################################
 

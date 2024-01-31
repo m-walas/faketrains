@@ -55,6 +55,17 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <v-dialog v-model="transactionModal.show" persistent max-width="300px">
+    <v-card>
+      <v-card-title class="headline">{{ transactionModal.title }}</v-card-title>
+      <v-card-text>{{ transactionModal.message }}</v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="transactionModal.show = false">OK</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 
@@ -158,6 +169,11 @@ export default defineComponent({
       selectedCityTo: null,
       selectedDate: '',
       noRoutesDialog: false,
+      transactionModal: {
+        show: false,
+        title: '',
+        message: '',
+      },
       canSearch: false,
     };
   },
@@ -208,12 +224,26 @@ export default defineComponent({
     updateCanSearch() {
       this.canSearch = this.selectedCityFrom !== null && this.selectedCityTo !== null && this.selectedDate !== '';
     },
+    checkTransactionStatus() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      if (status === 'success') {
+        this.transactionModal.show = true;
+        this.transactionModal.title = 'Sukces!';
+        this.transactionModal.message = 'Twój bilet został pomyślnie zakupiony.';
+      } else if (status === 'canceled') {
+        this.transactionModal.show = true;
+        this.transactionModal.title = 'Anulowano!';
+        this.transactionModal.message = 'Twoja rezerwacja została anulowana.';
+      }
+    },
   },
   mounted() {
     this.loadCities();
     watchEffect(() => {
       this.updateCanSearch();
     });
+    this.checkTransactionStatus();
   },
 });
 </script>
