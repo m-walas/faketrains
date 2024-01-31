@@ -301,6 +301,8 @@ class ReserveTicketView(APIView):
         departure_time = request.data.get("departureTime")
         seat_numbers = request.data.get("seats", [])
 
+        ticket_uuids = []
+
         try:
             _train = Train.objects.get(train_id=train_id)
             _schedule = Schedule.objects.get(
@@ -320,6 +322,7 @@ class ReserveTicketView(APIView):
                     schedule=_schedule,
                     status='reserved',
                 )
+                ticket_uuids.append(ticket.uuid)
                 logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ ticket created: {ticket.id}")
                 logger.info(f"🚀 ~ file: views.py ~ ReserveTicketView ~ created ticket uuid: {ticket.uuid}")
 
@@ -343,7 +346,7 @@ class ReserveTicketView(APIView):
                         "message": updated_seats
                     }
                 )
-            return Response({"message": "Miejsca zostały zarezerwowane.", "uuid": ticket.uuid}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Miejsca zostały zarezerwowane.", "uuid": ticket_uuids}, status=status.HTTP_201_CREATED)
 
         except Train.DoesNotExist:
             return Response({"error": "Nie znaleziono pociągu."}, status=status.HTTP_404_NOT_FOUND)
