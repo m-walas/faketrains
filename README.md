@@ -27,9 +27,9 @@ The project is available online at: [faketrains.mwalas.pl](http://faketrains.mwa
 
 ## Screenshots
 
-<img src="images/home.png" height="400" alt="Home Page"> <br>
-<img src="images/reservation.png" width="1045" alt="Reservation"> <br>
-<img src="images/login_register.gif" height="400" alt="Login and Register">
+<img src="images/home.png" width="828" alt="Home Page"> <br>
+<img src="images/reservation.png" width="828" alt="Reservation"> <br>
+<img src="images/login_register.gif" alt="Login and Register">
 
 ## Key Features
 
