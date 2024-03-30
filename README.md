@@ -1,6 +1,6 @@
 # Faketrains
 
-![Screenshot 1](images/faketrains_baner.png)
+![Screenshot 1](images/faketrainsbaner.png)
 
 Faketrains is an online platform created for searching train connections and purchasing tickets. The platform allows users to select optimal routes with possible transfers based on a dedicated algorithm.
 
