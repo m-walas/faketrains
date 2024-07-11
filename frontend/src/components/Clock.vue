@@ -20,7 +20,7 @@
 
 .clock .fa-clock {
   margin-right: 0.5vw;
-  color: #ff2770;
+  color: #35ff27;
 }
 
 .clock:hover {
