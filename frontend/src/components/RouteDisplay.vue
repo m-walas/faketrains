@@ -37,39 +37,41 @@ props: {
 <style scoped>
 .route-display {
 border: 1px solid #e0e0e0;
-border-radius: 8px;
-padding: 10px;
-margin-bottom: 10px;
+border-radius: 0.8vw;
+padding: 1vw;
+margin-bottom: 1vw;
 transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .route_details {
-font-size: 1rem;
+font-size: 1.2vw;
 color: #333; 
 display: flex; 
 align-items: center; 
-gap: 8px;
-margin-bottom: 10px;
+gap: 0.8vw;
+margin-bottom: 1vw;
 }
 
 .route-display:hover {
-transform: translateY(-5px);
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+transform: translateY(-0.5vw);
+box-shadow: 0 0.4vw 0.8vw rgba(0, 0, 0, 0.2);
 }
 
 .leg, .direct-route {
-margin-bottom: 10px;
+margin-bottom: 1vw;
 }
 
 .leg-info, .route-info {
 font-weight: bold;
 color: #ff2770;
-margin-top: 10px;
+margin-top: 1vw;
+font-size: 1.5vw;
 }
 
 .leg-time, .route-time, .leg-price, .route-price {
 color: #555;
-margin-left: 12px;
+margin-left: 1.2vw;
+font-size: 1.2vw;
 }
 
 v-icon {

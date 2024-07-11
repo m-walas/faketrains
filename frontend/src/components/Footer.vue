@@ -18,10 +18,10 @@
 
 <style scoped>
 .footer {
-  padding: 20px 0;
+  padding: 1vw 0;
   color: #fff;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 0.9rem;
-  max-height: 45px;
+  box-shadow: 0 -0.1vw 0.2vw rgba(0, 0, 0, 0.1);
+  font-size: 1vw;
+  max-height: 3vw;
 }
 </style>

@@ -1,46 +1,45 @@
 <template>
   <v-container fluid class="main-container">
-    <v-row>
-      <v-col cols="12" class="image-col">
+    <v-row justify="center"> <v-col cols="12" sm="8" md="6"> <v-card class="form-card">
+      <v-card-title class="headline font-weight-bold mb-2">Znajdź Połączenie</v-card-title>
+      <v-divider></v-divider>
 
-        <v-card class="form-card">
-          <v-card-title class="headline font-weight-bold mb-2">Znajdź Połączenie</v-card-title>
-          <v-divider></v-divider>
+      <v-card-text>
+        <Multiselect
+          class = "autocomplete-field multiselect-text" 
+          v-model="selectedCityFrom"
+          :options="cities"
+          placeholder="Wybierz miasto początkowe"
+          label="name"
+          track-by="name"
+          :searchable="true"
+          @update:modelValue="handleCityFromChange"
+        />
+        <Multiselect
+          class = "autocomplete-field multiselect-text"
+          v-model="selectedCityTo"
+          :options="cities"
+          placeholder="Wybierz miasto docelowe"
+          label="name"
+          track-by="name"
+          :searchable="true"
+          @update:modelValue="handleCityToChange"
+        />
+      </v-card-text>
 
-          <v-card-text>
-            <Multiselect
-              class = "autocomplete-field multiselect-text" 
-              v-model="selectedCityFrom"
-              :options="cities"
-              placeholder="Wybierz miasto początkowe"
-              label="name"
-              track-by="name"
-              :searchable="true"
-              @update:modelValue="handleCityFromChange"
-            />
-            <Multiselect
-              class = "autocomplete-field multiselect-text"
-              v-model="selectedCityTo"
-              :options="cities"
-              placeholder="Wybierz miasto docelowe"
-              label="name"
-              track-by="name"
-              :searchable="true"
-              @update:modelValue="handleCityToChange"
-            />
-          </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-text-field type="date" label="Data" class="date-field" v-model="selectedDate"></v-text-field>
+      </v-card-text>
 
-          <v-divider></v-divider>
-          <v-card-text>
-            <v-text-field type="date" label="Data" class="date-field" v-model="selectedDate"></v-text-field>
-          </v-card-text>
-
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn :disabled="!canSearch" @click="search">Szukaj</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer>
+          <v-btn :disabled="!canSearch" @click="search">Szukaj</v-btn>
+        </v-spacer>
+      </v-card-actions>
+    </v-card>
+    </v-col>
     </v-row>
   </v-container>
 
@@ -72,35 +71,21 @@
 <style scoped>
 .main-container {
   min-height: 100vh;
-}
-
-.image-col {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  position: relative;
 }
 
 .form-card {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 90vw;
+  max-width: 500px;
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 24px;
+  padding: 2vw;
   transition: all 0.3s ease-in-out;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
 }
 
 @keyframes fadeIn {
@@ -114,10 +99,10 @@
   color: #fff; 
   border: 1px solid #090a0b;
   border-radius: 4px;
-  padding: 10px 15px;
-  margin-bottom: 10px;
+  padding: 1vw 1.5vw;
+  margin-bottom: 1vw;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  min-width: 250px;
+  width: 100%;
 }
 
 .multiselect-text {

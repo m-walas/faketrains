@@ -253,8 +253,6 @@ methods: {
     align-items: center;
     background: transparent !important;
     height: 100vh;
-    flex-direction: column;
-    align-items: center;
 }
 
 .container {
@@ -263,8 +261,8 @@ methods: {
     box-shadow: 0 5px 15px rgb(0, 0, 0, 0.35);
     position: relative;
     overflow: hidden;
-    width: 2200px;
-    max-width: 100%;
+    width: 90vw;
+    max-width: 1000px;
     min-height: 500px;
     display: flex;
     align-items: center;
@@ -278,19 +276,17 @@ methods: {
     margin: 20px 0;
 }
 
-
-
 .container button{
     background-color: #ff2770;
     color: #fff;
-    font-size: 12px;
-    padding: 10px 45px;
+    font-size: 1.2vw;
+    padding: 1vw 4.5vw;
     border: 1px solid transparent;
     border-radius: 8px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-top: 10px;
+    margin-top: 1vw;
     cursor: pointer;
 }
 

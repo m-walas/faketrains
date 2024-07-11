@@ -11,24 +11,23 @@
   font-family: 'Roboto', 'Arial', sans-serif;
   color: #fff;
   background-color: transparent;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 0.5vw 1vw;
+  border-radius: 0.5vw;
   display: inline-block;
-  font-size: 1.3rem;
+  font-size: 1.5vw;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .clock .fa-clock {
-  margin-right: 10px;
+  margin-right: 0.5vw;
   color: #ff2770;
 }
 
 .clock:hover {
   background-color: #16030a;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0.2vw 0.4vw rgba(0, 0, 0, 0.3);
 }
 </style>
-
 
 <script>
 export default {

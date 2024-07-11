@@ -4,32 +4,43 @@
       <v-card-text class="text-h3 my-4 mx-4 text-center font-weight-bold">
         Wybierz miejsca
       </v-card-text>
+
       <div class="d-flex justify-center">
         <div class="train">
           <div class="seat-row">
-            <div v-for="seat in seats.slice(0, 5)" :key="seat.seat_number"
-                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
-                @click="handleSeatClick(seat)">
+            <div 
+              v-for="seat in seats.slice(0, 5)" 
+              :key="seat.seat_number"
+              :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
+              @click="handleSeatClick(seat)"
+            >
               {{ seat.seat_number }}
             </div>
           </div>
           <div class="seat-row">
-            <div v-for="seat in seats.slice(5, 10)" :key="seat.seat_number"
-                :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
-                @click="handleSeatClick(seat)">
+            <div 
+              v-for="seat in seats.slice(5, 10)" 
+              :key="seat.seat_number"
+              :class="{'seat-selected': seat.selected, 'seat-reserved': !seat.is_available}"
+              @click="handleSeatClick(seat)"
+            >
               {{ seat.seat_number }}
             </div>
           </div>
         </div>
       </div>
+
       <v-btn
         class="confirm-btn my-4 justify-center"
         @click="confirmSeat"
         color="primary"
-        :disabled="!isAnySeatSelected || getSelectedSeatsCount() != maxSeatsToSelect">
+        :disabled="!isAnySeatSelected || getSelectedSeatsCount() != maxSeatsToSelect"
+      >
         Potwierdź
       </v-btn>
+
       <p class="reservation-info">Po zatwierdzeniu miejsce zostanie tymczasowo zarezerwowane <br> i nie będzie można zmienić decyzji.</p>
+
       <div class="text-center">
         <v-snackbar v-model="snackbar" :timeout="2000" color="blue-grey">
           Maksymalna liczba miejsc do zarezerwowania to: {{ this.maxSeatsToSelect }}
@@ -187,24 +198,27 @@ export default {
   justify-content: center;
   width: auto;
   background-color: #333;
-  padding: 10px;
-  border-radius: 20px;
+  padding: 1vw;
+  border-radius: 2vw;
 }
 
 .seat-row {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1vw;
 }
 
 .seat-row > div {
-  width: 50px;
-  height: 50px;
+  width: 8vw;
+  height: 8vw;
+  max-width: 50px;
+  max-height: 50px;
   background-color: #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  font-size: 1.2vw;
 }
 
 .seat-selected {
@@ -216,10 +230,10 @@ export default {
 }
 
 .reservation-info {
-    font-size: 12px;
+    font-size: 1vw;
     font-style: italic;
     color: grey;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 1vw;
   }
 </style>

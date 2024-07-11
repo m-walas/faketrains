@@ -1,67 +1,83 @@
 <template>
   <v-container class="register-container">
-  <v-card class="pa-4 register-card">
-    <v-card-text class="text-h3 mb-8 text-center"> Register </v-card-text>
+    <v-card class="pa-4 register-card">
+      <v-card-text class="text-h3 mb-8 text-center"> Register </v-card-text>
     
-    <v-form v-on:keydown.enter="submitForm" v-model="valid">
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="first_name"
-        :rules="firstNameRules"
-        label="Imię"
-        type="text"
-        required
-      >
-      </v-text-field>
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="last_name"
-        :rules="lastNameRules"
-        label="Nazwisko"
-        type="text"
-        required
-      >
-      </v-text-field>
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="email"
-        :rules="emailRules"
-        label="Email"
-        type="email"
-        required
-      >
-      </v-text-field>
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="password1"
-        :rules="passwordRules1"
-        label="Hasło"
-        type="password"
-        required
-      >
-      </v-text-field>
-      <v-text-field
-        class="input-field"
-        density="compact"
-        v-model="password2"
-        :rules="passwordRules2"
-        label="Powtórz hasło"
-        type="password"
-        required
-      >
-      </v-text-field>
-      <v-alert v-if="this.serverErrors[0]"
-      color="error"
-      variant="outlined"
-      icon="$info"
-      :text=this.serverErrors[0]
-      class="mx-auto mb-6"
-      style="max-width: 260px"
-      ></v-alert>
+      <v-form v-on:keydown.enter="submitForm" v-model="valid">
+        <v-container>
+          <v-row>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                class="input-field"
+                density="compact"
+                v-model="first_name"
+                :rules="firstNameRules"
+                label="Imię"
+                type="text"
+                required
+              >
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                class="input-field"
+                density="compact"
+                v-model="last_name"
+                :rules="lastNameRules"
+                label="Nazwisko"
+                type="text"
+                required
+              >
+              </v-text-field>
+            </v-col>
+          <v-col cols="12">
+            <v-text-field
+              class="input-field"
+              density="compact"
+              v-model="email"
+              :rules="emailRules"
+              label="Email"
+              type="email"
+              required
+            >
+            </v-text-field>
+          </v-col>
+          <v-cols cols="12">
+            <v-text-field
+              class="input-field"
+              density="compact"
+              v-model="password1"
+              :rules="passwordRules1"
+              label="Hasło"
+              type="password"
+              required
+            >
+            </v-text-field>
+          </v-cols>
+          <v-cols cols="12">
+            <v-text-field
+              class="input-field"
+              density="compact"
+              v-model="password2"
+              :rules="passwordRules2"
+              label="Powtórz hasło"
+              type="password"
+              required
+            >
+            </v-text-field>
+          </v-cols>
+          <v-cols cols="12">
+            <v-alert v-if="this.serverErrors[0]"
+            color="error"
+            variant="outlined"
+            icon="$info"
+            :text=this.serverErrors[0]
+            class="mx-auto mb-6"
+            style="max-width: 260px"
+            ></v-alert>
+          </v-cols>
+          </v-row>
+        </v-container>
       <v-row class="ma-1" justify="end" style="max-width: 100%">
         <v-btn class="register-btn" @click="submitForm" color="#ff2770" :disabled="!valid">
           Zarejestruj
@@ -85,10 +101,11 @@
 }
 
 .register-card {
-  width: 400px;
-  height: 600px;
-  margin: 50px auto;
-  padding: 20px;
+  width: 90vw;
+  max-width: 400px;
+  height: auto;
+  margin: 5vw auto;
+  padding: 2vw;
   box-shadow: 0 0 25px #ff2770;
   border-radius: 8px;
   border: 2px solid #ff2770;
@@ -104,7 +121,7 @@
 
 .input-field {
   background-color: transparent !important;
-  margin-top: 20px;
+  margin-top: 2vw;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 5px;
   transition: box-shadow 0.2s ease-in-out;
@@ -121,7 +138,7 @@
 .register-btn {
   transition: background-color 0.3s ease, transform 0.3s ease;
   color: white;
-  margin-top: 20px;
+  margin-top: 2vw;
 }
 
 .register-btn:hover {

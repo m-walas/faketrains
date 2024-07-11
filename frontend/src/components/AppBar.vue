@@ -7,20 +7,22 @@
 
     <v-spacer></v-spacer>
 
-    <template v-if="authStore.isLoggedIn">
-      <span class="user-info">{{ authStore.firstName }} {{ authStore.lastName }}</span>
-      <v-btn icon @click="goToProfile">
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon @click="handleLogout">
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </template>
-    <template v-else>
-      <v-btn icon @click="login">
-        <v-icon>mdi-login</v-icon>
-      </v-btn>
-    </template>
+    <div class="user-actions">
+      <template v-if="authStore.isLoggedIn">
+        <span class="user-info">{{ authStore.firstName }} {{ authStore.lastName }}</span>
+        <v-btn icon @click="goToProfile">
+          <v-icon>mdi-account</v-icon>
+        </v-btn>
+        <v-btn icon @click="handleLogout">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
+      </template>
+      <template v-else>
+        <v-btn icon @click="login">
+          <v-icon>mdi-login</v-icon>
+        </v-btn>
+      </template>
+    </div>
     
   </v-app-bar>
 
@@ -33,13 +35,11 @@
   </v-snackbar>
 </template>
 
-<style>
+<style scoped>
 .custom-app-bar {
   background-color: rgba(0, 0, 0, 0.8) !important;
 }
-</style>
 
-<style scoped>
 .app-bar-content {
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@
   font-family: 'Segoe UI', sans-serif;
   color: #fff;
   cursor: pointer;
-  font-size: 2rem;
+  font-size: 2.5vw;
   transition: color 0.3s ease;
 }
 
@@ -59,20 +59,40 @@
   color: #ff2770;
 }
 
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
 .user-info {
-  margin-right: 10px;
+  margin-right: 1vw;
   font-weight: bold;
   color: #fff;
+  font-size: 1.2vw;
 }
 
 .v-btn {
-  margin-left: 10px;
+  margin-left: 1vw;
   color: #fff;
   transition: transform 0.2s ease-in-out;
 }
 
 .v-btn:hover {
   transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+  /* For smaller screens */
+  .user-actions {
+    flex-direction: column; /* Stack elements vertically */
+  }
+  .v-btn {
+    margin-top: 0.5vw;
+    margin-left: 0; 
+  }
+  .app-bar-title {
+    font-size: 4vw;
+  }
 }
 </style>
 

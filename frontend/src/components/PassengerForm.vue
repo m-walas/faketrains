@@ -1,30 +1,49 @@
 <template>
     <div v-if="!purchaseComplete">
         <div v-if="timeLeft > 0">
-            <div v-for="(seat, index) in selectedSeats" :key="index">
-                <br>
-                <h3>Miejsce: {{ seat.seat_number }}</h3>
-                <v-text-field 
-                    label="Imię" 
-                    v-model="seat.passenger.firstName" 
-                    :rules="[v => !!v || 'Imię jest wymagane']"
-                ></v-text-field>
-                <v-text-field 
-                    label="Nazwisko" 
-                    v-model="seat.passenger.lastName" 
-                    :rules="[v => !!v || 'Nazwisko jest wymagane']"
-                ></v-text-field>
-            </div>
+            <v-container>
+                <v-row>
+                    <v-col
+                        v-for="(seat, index) in selectedSeats" 
+                        :key="index"
+                        cols="12"
+                        md="6"
+                    >
+                        <br>
+                        <h3>Miejsce: {{ seat.seat_number }}</h3>
+                        <v-text-field 
+                            label="Imię" 
+                            v-model="seat.passenger.firstName" 
+                            :rules="[v => !!v || 'Imię jest wymagane']"
+                        ></v-text-field>
+                        <v-text-field 
+                            label="Nazwisko" 
+                            v-model="seat.passenger.lastName" 
+                            :rules="[v => !!v || 'Nazwisko jest wymagane']"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+            </v-container>
             <v-checkbox 
                 label="Potwierdzam poprawność danych i chcę dokonać transakcji" 
                 v-model="isConfirmed"
             ></v-checkbox>
             <div class="confirm-section">
-                <v-btn color="success" @click="confirmPassengerDetails" :loading="isLoading" :disabled="!isConfirmed || isLoading || !allFieldsValid">
+                <v-btn 
+                    color="success" 
+                    @click="confirmPassengerDetails" 
+                    :loading="isLoading" 
+                    :disabled="!isConfirmed || isLoading || !allFieldsValid"
+                >
                     Kup
                 </v-btn>
                 <span class="timer">{{ formattedTimeLeft }}</span>
-                <span class="reservation-message" :class="{ blinking: isBlinking }">{{ reservationMessage }}</span>
+                <span 
+                    class="reservation-message" 
+                    :class="{ blinking: isBlinking }"
+                >
+                    {{ reservationMessage }}
+                </span>
             </div>
         </div>
         <div v-else>
@@ -179,23 +198,25 @@ export default {
 .confirm-section {
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin-top: 1vw;
 }
 
 .timer {
-    margin-left: 20px;
-    margin-right: 20px;
-    font-size: 1.2em;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    font-size: 1.2vw;
     font-weight: bold;
 }
 
 .reservation-message {
-    font-size: 12px;
+    font-size: 0.9vw;
     font-style: italic;
     color: #4f5154;
 }
 
 .blinking {
-    animation: blinker 2s linear infinite;
+    animation: blinker 1s linear infinite;
 }
 
 @keyframes blinker {

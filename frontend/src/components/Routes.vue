@@ -43,6 +43,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 2vw;
 }
 
 .routes-container {
@@ -51,33 +52,36 @@ body {
 
 .route-info {
   text-align: center;
-  margin-bottom: 20px;
-  margin-top: 50px;
+  margin-bottom: 2vw;
+  margin-top: 5vw;
   color: #ff2770;
 }
 
 .carousel-container {
   overflow: hidden;
-  width: 640px; 
+  width: 100%; 
   margin: 0 auto;
 }
 
 .carousel-wrapper {
-  width: 300px; 
-  margin-left: 170px; 
+  width: 100%;
+  margin-left: 0;
 }
 
 .carousel {
   display: flex;
-  justify-content: flex-start;
+  /* justify-content: flex-start; */
   transition: transform 0.5s ease-in-out;
 }
 
 .carousel-item {
-  flex: 0 0 300px;
+  /* flex: 0 0 300px; */
+  flex-shrink: 0;
+  width: 90vw;
+  max-width: 300px;
   opacity: 0.5;
   transition: transform 0.5s ease, opacity 0.3s ease;
-  margin: 0 10px;
+  margin: 0 1vw;
 }
 
 .carousel-item.active {
@@ -89,23 +93,24 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 10;
 }
 
 .carousel-button.left {
-  left: 10px;
+  left: 1vw;
 }
 
 .carousel-button.right {
-  right: 10px;
+  right: 1vw;
 }
 
 .route-card {
-  max-width: 300px;
+  max-width: 90vw;
   min-height: 400px;
   text-align: left;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  margin-top: 20px;
+  margin-top: 2vw;
 }
 
 .route-card:hover {
@@ -119,21 +124,18 @@ body {
 }
 
 @media only screen and (max-width: 600px) {
-.carousel-wrapper {
-  width: 100%;
-}
-
 .carousel-item {
-  width: 100%;
+  width: 90vw;
+  max-width: 300px;
 }
 }
 
 .details-panel {
-  padding: 20px;
+  padding: 2vw;
   background-color: #f2f2f2;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  margin-top: 2vw;
 } 
 </style>
 

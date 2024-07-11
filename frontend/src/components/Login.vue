@@ -33,9 +33,10 @@
 }
 
 .login-card {
-  width: 400px;
-  height: 600px;
-  margin: 50px auto;
+  width: 90vw;
+  max-width: 400px;
+  height: auto;
+  margin: 5vw auto;
   box-shadow: 0 0 25px #ff2770;
   border-radius: 8px;
   border: 2px solid #ff2770;
@@ -51,7 +52,7 @@
 
 .input-field {
   background-color: transparent !important;
-  margin-top: 20px;
+  margin-top: 2vw;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 5px;
   transition: box-shadow 0.2s ease-in-out;
@@ -68,7 +69,7 @@
 .login-btn {
   transition: transform 0.2s ease-in-out;
   color: white;
-  margin-top: 20px;
+  margin-top: 2vw;
 }
 
 .login-btn:hover {

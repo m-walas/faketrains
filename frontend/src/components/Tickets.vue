@@ -33,19 +33,25 @@
               <v-icon small>mdi-arrow-right</v-icon> {{ ticket.arrival_city }}
             </p>
           </div>
+
           <div class="date-time-sections">
-            <div class="date-section">
-              <h4 class="ticket-info">Data</h4>
-              <p><v-icon small>mdi-calendar</v-icon>{{ ticket.valid_date }}</p>
-            </div>
-            <div class="time-section">
-              <h4 class="ticket-info">Godzina odjazdu</h4>
-              <p>
-                <v-icon small>mdi-clock-time-four-outline</v-icon>
-                {{ ticket.departure_time }}
-              </p>
-            </div>
+            <v-col cols="12" sm="6">
+              <div class="date-section">
+                <h4 class="ticket-info">Data</h4>
+                <p><v-icon small>mdi-calendar</v-icon>{{ ticket.valid_date }}</p>
+              </div>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <div class="time-section">
+                <h4 class="ticket-info">Godzina odjazdu</h4>
+                <p>
+                  <v-icon small>mdi-clock-time-four-outline</v-icon>
+                  {{ ticket.departure_time }}
+                </p>
+              </div>
+            </v-col>
           </div>
+
           <div class="price-section">
             <h4 class="ticket-info">Cena</h4>
             <p><v-icon small>mdi-cash-multiple</v-icon> {{ ticket.price }}</p>
@@ -97,13 +103,20 @@ export default {
 .date-time-sections {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+}
+
+@media (min-width: 600px) {
+  .date-time-sections {
+    flex-direction: row; 
+  }
 }
 
 .date-section,
 .price-section,
 .travel-section,
 .time-section {
-  margin: 5px;
+  margin: 0.5vw;
 }
 
 .ticket-info {
