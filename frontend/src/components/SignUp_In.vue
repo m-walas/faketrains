@@ -295,6 +295,27 @@ methods: {
     margin-top: 1vw;
     cursor: pointer;
 }
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .container button {
+    font-size: 1.9vw;
+    padding: 1.5vw 5vw;
+  }
+}
+/* style for tablets */
+@media (max-width: 768px) {
+  .container button {
+    font-size: 1.3vw;
+    padding: 0.9vw 4vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2200px) {
+  .container button {
+    font-size: 0.4vw;
+    padding: 0.7vw 3vw;
+  }
+}
 
 .container button.hidden{
     background-color: transparent;

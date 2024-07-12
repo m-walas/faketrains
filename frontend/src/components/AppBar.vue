@@ -51,17 +51,25 @@
   font-family: 'Segoe UI', sans-serif;
   color: #fff;
   cursor: pointer;
-  font-size: 1.1vw;
+  font-size: 1.2vw;
   transition: color 0.3s ease;
 }
-@media (max-width: 1400px) {
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .app-bar-title {
+    font-size: 2.8vw;
+  }
+}
+/* style for tablets */
+@media (max-width: 768px) {
   .app-bar-title {
     font-size: 3vw;
   }
 }
-@media (max-width: 700px) {
+/* style for 21:9 monitors */
+@media (min-width: 2560px) {
   .app-bar-title {
-    font-size: 4vw;
+    font-size: 1vw;
   }
 }
 
@@ -92,16 +100,12 @@
 }
 
 @media (max-width: 600px) {
-  /* For smaller screens */
   .user-actions {
-    flex-direction: column; /* Stack elements vertically */
+    flex-direction: column;
   }
   .v-btn {
     margin-top: 0.5vw;
     margin-left: 0; 
-  }
-  .app-bar-title {
-    font-size: 3vw;
   }
 }
 </style>

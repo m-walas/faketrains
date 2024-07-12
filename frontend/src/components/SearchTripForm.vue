@@ -78,7 +78,7 @@
 }
 
 .form-card {
-  width: 90vw;
+  width: 80vw;
   max-width: 500px;
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
@@ -95,8 +95,20 @@
   opacity: 0;
   animation: fadeIn 0.5s ease forwards;
 }
-
-@media (min-aspect-ratio: 21/9) {
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .form-card {
+    width: 75vw;
+  }
+}
+/* style for tablets */
+@media (max-width: 768px) {
+  .form-card {
+    width: 90vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2560px) {
   .form-card {
     width: 70vw;
   }

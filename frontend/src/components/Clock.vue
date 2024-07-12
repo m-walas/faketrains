@@ -14,17 +14,25 @@
   padding: 0.5vw 1vw;
   border-radius: 0.5vw;
   display: inline-block;
-  font-size: 1vw;
+  font-size: 1.2vw;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-@media (max-width: 1400px) {
+/* style for mobile devices */
+@media (max-width: 480px) {
   .clock {
-    font-size: 2vw;
+    font-size: 2.7vw;
   }
 }
-@media (max-width: 700px) {
+/* style for tablets */
+@media (max-width: 768px) {
   .clock {
-    font-size: 4vw;
+    font-size: 3vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2560px) {
+  .clock {
+    font-size: 1vw;
   }
 }
 
