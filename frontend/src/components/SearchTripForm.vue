@@ -86,6 +86,14 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 2vw;
   transition: all 0.3s ease-in-out;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
 }
 
 @media (min-aspect-ratio: 21/9) {

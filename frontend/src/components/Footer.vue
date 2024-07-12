@@ -21,7 +21,7 @@
   padding: 1vw 0;
   color: #fff;
   box-shadow: 0 -0.1vw 0.2vw rgba(0, 0, 0, 0.1);
-  font-size: 1vw;
-  max-height: 3vw;
+  font-size: 0.5vw;
+  max-height: 1.8vw;
 }
 </style>

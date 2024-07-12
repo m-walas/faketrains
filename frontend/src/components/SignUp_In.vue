@@ -262,8 +262,8 @@ methods: {
     position: relative;
     overflow: hidden;
     width: 90vw;
-    max-width: 1000px;
-    min-height: 500px;
+    max-width: 1100px;
+    min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -271,7 +271,7 @@ methods: {
 
 @media (min-aspect-ratio: 21/9) {
   .container {
-    max-width: 800px;
+    max-width: 900px;
   }
 }
 
@@ -285,8 +285,8 @@ methods: {
 .container button{
     background-color: #ff2770;
     color: #fff;
-    font-size: 1.2vw;
-    padding: 1vw 4.5vw;
+    font-size: 0.7vw;
+    padding: 1vw 4.2vw;
     border: 1px solid transparent;
     border-radius: 8px;
     font-weight: 600;
@@ -444,16 +444,22 @@ color: #666;
 .register-btn, .login-btn {
 background-color: #ff2770;
 color: #fff;
-font-size: 12px;
-padding: 10px 45px;
+font-size: 2vw;
+padding: 1vw 4vw;
 border: 1px solid transparent;
 border-radius: 8px;
 font-weight: 600;
 letter-spacing: 0.5px;
 text-transform: uppercase;
-margin-top: 10px;
+margin-top: 1vw;
 cursor: pointer;
 transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+@media (max-width: 600px) {
+.register-btn, .login-btn {
+    font-size: 3vw;
+}
 }
 
 .register-btn.hidden, .login-btn.hidden {
@@ -468,9 +474,25 @@ transform: translateY(-2px);
 
 .text-info-signup, .text-info-signin{
     color: #ff2770;
-    font-size: 25px;
-    margin-left: 15px;
+    font-size: 1.2vw;
+    margin-left: 1vw;
     padding: 15px;
     background-color: transparent;
 }
+@media (max-width: 2100px) {
+  .text-info-signup, .text-info-signin {
+    font-size: 2.5vw;
+  }
+}
+@media (max-width: 1400px) {
+  .text-info-signup, .text-info-signin {
+    font-size: 3.5vw;
+  }
+}
+@media (max-width: 700px) {
+  .text-info-signup, .text-info-signin {
+    font-size: 4vw;
+  }
+}
+
 </style>

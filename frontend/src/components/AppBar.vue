@@ -51,9 +51,18 @@
   font-family: 'Segoe UI', sans-serif;
   color: #fff;
   cursor: pointer;
-  font-size: 2.5vw;
+  font-size: 1.1vw;
   transition: color 0.3s ease;
-  max-width: 300px;
+}
+@media (max-width: 1400px) {
+  .app-bar-title {
+    font-size: 3vw;
+  }
+}
+@media (max-width: 700px) {
+  .app-bar-title {
+    font-size: 4vw;
+  }
 }
 
 .app-bar-title:hover {

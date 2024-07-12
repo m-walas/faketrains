@@ -14,8 +14,18 @@
   padding: 0.5vw 1vw;
   border-radius: 0.5vw;
   display: inline-block;
-  font-size: 1.5vw;
+  font-size: 1vw;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+@media (max-width: 1400px) {
+  .clock {
+    font-size: 2vw;
+  }
+}
+@media (max-width: 700px) {
+  .clock {
+    font-size: 4vw;
+  }
 }
 
 .clock .fa-clock {
