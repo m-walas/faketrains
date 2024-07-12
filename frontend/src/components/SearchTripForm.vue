@@ -88,6 +88,12 @@
   transition: all 0.3s ease-in-out;
 }
 
+@media (min-aspect-ratio: 21/9) {
+  .form-card {
+    width: 70vw;
+  }
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;

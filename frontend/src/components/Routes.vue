@@ -57,6 +57,12 @@ body {
   color: #ff2770;
 }
 
+@media (min-aspect-ratio: 21/9) {
+  .route-info {
+    font-size: 1.8vw;
+  }
+}
+
 .carousel-container {
   overflow: hidden;
   width: 100%; 

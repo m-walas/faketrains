@@ -305,6 +305,12 @@ select:focus {
   border-radius: 8px;
 }
 
+@media (min-aspect-ratio: 21/9) {
+  .ticket-options {
+    flex-direction: column;
+  }
+}
+
 .ticket-options h3 {
   margin-top: 0;
 }

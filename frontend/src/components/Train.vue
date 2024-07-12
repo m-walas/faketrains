@@ -197,6 +197,7 @@ export default {
   align-items: center;
   justify-content: center;
   width: auto;
+  max-width: 400px;
   background-color: #333;
   padding: 1vw;
   border-radius: 2vw;

@@ -53,6 +53,7 @@
   cursor: pointer;
   font-size: 2.5vw;
   transition: color 0.3s ease;
+  max-width: 300px;
 }
 
 .app-bar-title:hover {
@@ -91,7 +92,7 @@
     margin-left: 0; 
   }
   .app-bar-title {
-    font-size: 4vw;
+    font-size: 3vw;
   }
 }
 </style>

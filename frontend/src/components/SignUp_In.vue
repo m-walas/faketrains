@@ -269,6 +269,12 @@ methods: {
     justify-content: center;
 }
 
+@media (min-aspect-ratio: 21/9) {
+  .container {
+    max-width: 800px;
+  }
+}
+
 .container p{
     font-size: 14px;
     line-height: 20px;
