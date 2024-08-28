@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app class="animated fadeIn custom-app-bar">
+  <v-app-bar app class="custom-app-bar">
     <v-toolbar-title @click="goToHome" class="app-bar-title">
       FakeTrains
     </v-toolbar-title>
@@ -19,7 +19,7 @@
       </template>
       <template v-else>
         <v-btn icon @click="login">
-          <v-icon>mdi-login</v-icon>
+          <v-icon class="icon">mdi-login</v-icon>
         </v-btn>
       </template>
     </div>
@@ -39,6 +39,26 @@
 .custom-app-bar {
   background-color: rgba(0, 0, 0, 0.8) !important;
 }
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .custom-app-bar {
+    min-height: 12vw !important;
+    padding: 0.5vw !important;
+  }
+}
+/* style for tablets */
+@media (max-width: 1028px) {
+  .custom-app-bar {
+    min-height: 10vw;
+    padding: 2vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2260px) {
+  .custom-app-bar {
+    min-height: 2.2vw;
+  }
+}
 
 .app-bar-content {
   display: flex;
@@ -51,23 +71,23 @@
   font-family: 'Segoe UI', sans-serif;
   color: #fff;
   cursor: pointer;
-  font-size: 1.2vw;
+  font-size: 1.5vw;
   transition: color 0.3s ease;
 }
 /* style for mobile devices */
 @media (max-width: 480px) {
   .app-bar-title {
-    font-size: 2.8vw;
+    font-size: 5vw !important;
   }
 }
 /* style for tablets */
-@media (max-width: 768px) {
+@media (max-width: 1028px) {
   .app-bar-title {
-    font-size: 3vw;
+    font-size: 3.5vw;
   }
 }
 /* style for 21:9 monitors */
-@media (min-width: 2560px) {
+@media (min-width: 2260px) {
   .app-bar-title {
     font-size: 1vw;
   }
@@ -80,6 +100,8 @@
 .user-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding-right: 2vw;
 }
 
 .user-info {
@@ -87,6 +109,24 @@
   font-weight: bold;
   color: #fff;
   font-size: 1.2vw;
+}
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .user-info {
+    font-size: 4vw !important;
+  }
+}
+/* style for tablets */
+@media (max-width: 1028px) {
+  .user-info {
+    font-size: 2.5vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2260px) {
+  .user-info {
+    font-size: 0.8vw;
+  }
 }
 
 .v-btn {
@@ -99,15 +139,6 @@
   transform: scale(1.1);
 }
 
-@media (max-width: 600px) {
-  .user-actions {
-    flex-direction: column;
-  }
-  .v-btn {
-    margin-top: 0.5vw;
-    margin-left: 0; 
-  }
-}
 </style>
 
 

@@ -98,17 +98,17 @@
 /* style for mobile devices */
 @media (max-width: 480px) {
   .form-card {
-    width: 75vw;
+    width: 75vw !important;
   }
 }
 /* style for tablets */
-@media (max-width: 768px) {
+@media (max-width: 1028px) {
   .form-card {
     width: 90vw;
   }
 }
 /* style for 21:9 monitors */
-@media (min-width: 2560px) {
+@media (min-width: 2260px) {
   .form-card {
     width: 70vw;
   }
@@ -129,6 +129,24 @@
   margin-bottom: 1vw;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
+}
+/* style for mobile devices */
+@media (max-width: 480px) {
+  .autocomplete-field, .date-field {
+    font-size: 3.1vw !important;
+  }
+}
+/* style for tablets */
+@media (max-width: 1028px) {
+  .autocomplete-field, .date-field {
+    font-size: 2vw;
+  }
+}
+/* style for 21:9 monitors */
+@media (min-width: 2260px) {
+  .autocomplete-field, .date-field {
+    font-size: 0.55vw;
+  }
 }
 
 .multiselect-text {

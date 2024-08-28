@@ -18,19 +18,20 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 /* style for mobile devices */
+/* for mobile do not display clock */
 @media (max-width: 480px) {
   .clock {
-    font-size: 2.7vw;
+    display: none !important;
   }
 }
 /* style for tablets */
-@media (max-width: 768px) {
+@media (max-width: 1028px) {
   .clock {
     font-size: 3vw;
   }
 }
 /* style for 21:9 monitors */
-@media (min-width: 2560px) {
+@media (min-width: 2260px) {
   .clock {
     font-size: 1vw;
   }
