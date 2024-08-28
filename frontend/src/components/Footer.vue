@@ -8,7 +8,7 @@
             © 2023 Mateusz Walas | Maja Wiśniewska | Dawid Burda
           </v-col>
           <v-col cols="12" class="version-github-row">
-            <span class="version-info">v2.0.1</span>
+            <span class="version-info">v2.0.2</span>
             <v-btn icon href="https://github.com/m-walas/faketrains" target="_blank" class="github-btn">
               <v-icon>mdi-github</v-icon>
             </v-btn>
@@ -18,7 +18,7 @@
         <!-- For bigger screens -->
         <template v-else>
           <v-col cols="auto">
-            <span class="version-info">v2.0.1</span>
+            <span class="version-info">v2.0.2</span>
           </v-col>
           <v-col cols="auto" class="text-center author-info">
             © 2023 Mateusz Walas | Maja Wiśniewska | Dawid Burda
