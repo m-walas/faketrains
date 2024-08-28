@@ -8,7 +8,7 @@
             © 2023 Mateusz Walas | Maja Wiśniewska | Dawid Burda
           </v-col>
           <v-col cols="12" class="version-github-row">
-            <span class="version-info">v2.0.2</span>
+            <span class="version-info">v2.0.3</span>
             <v-btn icon href="https://github.com/m-walas/faketrains" target="_blank" class="github-btn">
               <v-icon>mdi-github</v-icon>
             </v-btn>
@@ -18,7 +18,7 @@
         <!-- For bigger screens -->
         <template v-else>
           <v-col cols="auto">
-            <span class="version-info">v2.0.2</span>
+            <span class="version-info">v2.0.3</span>
           </v-col>
           <v-col cols="auto" class="text-center author-info">
             © 2023 Mateusz Walas | Maja Wiśniewska | Dawid Burda
@@ -60,11 +60,11 @@ export default {
   color: #5a5353ba;
   box-shadow: 0 -0.1vw 0.2vw rgba(0, 0, 0, 0.1);
   background-color: rgba(0, 0, 0, 0.8) !important;
-  max-height: 40vw !important;
+  max-height: 3.3vw;
 }
 
 /* style for mobile devices */
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .footer {
     max-height: 35vw !important;
   }
@@ -72,19 +72,19 @@ export default {
 /* style for tablets */
 @media (max-width: 1028px) {
   .footer {
-    max-height: 10vw;
+    max-height: 7.2vw;
   }
 }
 /* style for 21:9 monitors */
 @media (min-width: 2260px) {
   .footer {
-    max-height: 20vw;
+    max-height: 2.2vw !important;
   }
 }
 
 .version-info {
   float: left;
-  font-size: 0.5vw;
+  font-size: 0.7vw;
   color: #5a5353ba;
   padding-left: 1vw;
   padding-bottom: 0vw;
@@ -119,7 +119,7 @@ export default {
 .author-info {
   order: -1; /* Make authors appear first on mobile */
   margin-bottom: 0vw;
-  font-size: 0.7vw;
+  font-size: 0.9vw;
 }
 
 /* style for mobile devices */
