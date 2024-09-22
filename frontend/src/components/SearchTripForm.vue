@@ -1,205 +1,102 @@
 <template>
-  <v-container fluid class="main-container">
-    <v-row justify="center"> <v-col cols="12" sm="8" md="6"> <v-card class="form-card">
-      <v-card-title class="headline font-weight-bold mb-2">Znajdź Połączenie</v-card-title>
-      <v-divider></v-divider>
+  <v-container fluid class="search-form-main-container">
+    <v-row justify="center">
+      <v-col cols="12" sm="8" md="6">
+        <v-card class="search-form-card">
+          <v-card-title class="search-form-title">Znajdź Połączenie</v-card-title>
+          <v-divider class="search-form-divider"></v-divider>
 
-      <v-card-text>
-        <Multiselect
-          class = "autocomplete-field multiselect-text" 
-          v-model="selectedCityFrom"
-          :options="cities"
-          placeholder="Wybierz miasto początkowe"
-          label="name"
-          track-by="name"
-          :searchable="true"
-          @update:modelValue="handleCityFromChange"
-        />
-        <Multiselect
-          class = "autocomplete-field multiselect-text"
-          v-model="selectedCityTo"
-          :options="cities"
-          placeholder="Wybierz miasto docelowe"
-          label="name"
-          track-by="name"
-          :searchable="true"
-          @update:modelValue="handleCityToChange"
-        />
-      </v-card-text>
+          <v-card-text>
+            <Multiselect
+              class="search-form-field"
+              v-model="selectedCityFrom"
+              :options="cities"
+              placeholder="Wybierz miasto początkowe"
+              label="name"
+              track-by="name"
+              :searchable="true"
+              @update:modelValue="handleCityFromChange"
+            />
+            <Multiselect
+              class="search-form-field"
+              v-model="selectedCityTo"
+              :options="cities"
+              placeholder="Wybierz miasto docelowe"
+              label="name"
+              track-by="name"
+              :searchable="true"
+              @update:modelValue="handleCityToChange"
+            />
+          </v-card-text>
 
-      <v-divider></v-divider>
-      <v-card-text>
-        <v-text-field type="date" label="Data" class="date-field" v-model="selectedDate"></v-text-field>
-      </v-card-text>
+          <v-divider class="search-form-divider"></v-divider>
+          <v-card-text>
+            <v-text-field
+              type="date"
+              label="Data"
+              class="search-form-field"
+              v-model="selectedDate"
+            ></v-text-field>
+          </v-card-text>
 
-      <v-divider></v-divider>
-      <v-card-actions>
-        <v-spacer>
-          <v-btn :disabled="!canSearch" @click="search">Szukaj</v-btn>
-        </v-spacer>
-      </v-card-actions>
-    </v-card>
-    </v-col>
+          <v-divider class="search-form-divider"></v-divider>
+          <v-card-actions class="search-form-actions">
+            <v-spacer></v-spacer>
+            <v-btn
+              :disabled="!canSearch"
+              @click="search"
+              class="search-form-button"
+              @mousemove="handleMouseMove"
+              @mouseleave="resetMousePosition"
+            >
+              Szukaj
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-row>
+
+    <v-dialog v-model="noRoutesDialog" persistent max-width="300px">
+      <v-card class="search-form-dialog-card">
+        <v-card-title class="search-form-dialog-title">Informacja</v-card-title>
+        <v-card-text>Brak dostępnych tras dla podanych kryteriów.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="noRoutesDialog = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="transactionModal.show" persistent max-width="350px">
+      <v-card
+        :class="[
+          'search-form-dialog-card',
+          transactionModal.isSuccess ? 'search-form-success-dialog' : 'search-form-error-dialog',
+        ]"
+      >
+        <v-card-title class="search-form-dialog-title">
+          {{ transactionModal.title }}
+        </v-card-title>
+        <v-card-text>{{ transactionModal.message }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="transactionModal.show = false">OK</v-btn>
+          <v-btn
+            v-if="transactionModal.isSuccess"
+            class="search-form-dialog-button"
+            text
+            @click="goToProfile"
+          >
+            Przejdź do profilu
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
-
-  <v-dialog v-model="noRoutesDialog" persistent max-width="300px">
-    <v-card>
-      <v-card-title class="headline">Informacja</v-card-title>
-      <v-card-text>Brak dostępnych tras dla podanych kryteriów.</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="noRoutesDialog = false">OK</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="transactionModal.show" persistent max-width="350px">
-    <v-card :class="{ 'transaction-dialog': true, 'success-dialog': transactionModal.isSuccess, 'error-dialog': !transactionModal.isSuccess }">
-      <v-card-title class="headline">{{ transactionModal.title }}</v-card-title>
-      <v-card-text>{{ transactionModal.message }}</v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="transactionModal.show = false">OK</v-btn>
-        <v-btn v-if="transactionModal.isSuccess" class="green" text @click="goToProfile">Przejdź do profilu</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
-
-<style scoped>
-.main-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.form-card {
-  width: 80vw;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 2vw;
-  transition: all 0.3s ease-in-out;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
-}
-/* style for mobile devices */
-@media (max-width: 480px) {
-  .form-card {
-    width: 75vw !important;
-  }
-}
-/* style for tablets */
-@media (max-width: 1028px) {
-  .form-card {
-    width: 90vw;
-  }
-}
-/* style for 21:9 monitors */
-@media (min-width: 2260px) {
-  .form-card {
-    width: 70vw;
-  }
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-.autocomplete-field, .date-field {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff; 
-  border: 1px solid #090a0b;
-  border-radius: 4px;
-  padding: 1vw 1.5vw;
-  margin-bottom: 1vw;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
-}
-/* style for mobile devices */
-@media (max-width: 480px) {
-  .autocomplete-field, .date-field {
-    font-size: 3.1vw !important;
-  }
-}
-/* style for tablets */
-@media (max-width: 1028px) {
-  .autocomplete-field, .date-field {
-    font-size: 2vw;
-  }
-}
-/* style for 21:9 monitors */
-@media (min-width: 2260px) {
-  .autocomplete-field, .date-field {
-    font-size: 0.55vw;
-  }
-}
-
-.multiselect-text {
-  color: #000;
-}
-
-.autocomplete-field:hover, .date-field:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.autocomplete-field:focus, .date-field:focus {
-  border-color: #ff2770;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.transaction-dialog {
-  border-radius: 10px;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease-in-out;
-  background: rgba(255, 255, 255, 1);
-  border-left: 5px solid;
-}
-
-.success-dialog {
-  border-color: #4caf50;
-}
-
-.error-dialog {
-  border-color: #f44336;
-}
-
-.v-card-actions .green {
-  color: #4caf50;
-  transition: transform 0.3s ease;
-}
-
-.v-card-actions .green:hover {
-  transform: translateY(-2px);
-}
-
-.v-btn:hover {
-  transform: translateY(-2px);
-}
-
-.v-card-title {
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-}
-</style>
-
-
 <script lang="ts">
-import { defineComponent, ref, onMounted, watchEffect } from 'vue';
+import { defineComponent } from 'vue';
 import axios from 'axios';
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
@@ -228,10 +125,7 @@ export default defineComponent({
       try {
         const response = await axios.get('/api/cities/');
         const citiesData = response.data.cities;
-        citiesData.forEach(city => {
-          // console.log("załadowane miasto: ", city);
-          this.cities = citiesData;
-        });
+        this.cities = citiesData;
       } catch (error) {
         console.error('Błąd podczas pobierania miast:', error);
       }
@@ -247,24 +141,25 @@ export default defineComponent({
       this.$router.push('/profile');
     },
     search() {
-      // console.log("selectedCityFrom.value: ", this.selectedCityFrom);
-      // console.log("selectedCityTo.value: ", this.selectedCityTo);
-
       if (this.selectedCityFrom && this.selectedCityTo && this.selectedDate) {
-        const apiUrl = `/api/search_trains/?from=${encodeURIComponent(this.selectedCityFrom)}&to=${encodeURIComponent(this.selectedCityTo)}&date=${encodeURIComponent(this.selectedDate)}`;
-        axios.get(apiUrl)
-          .then(response => {
+        const apiUrl = `/api/search_trains/?from=${encodeURIComponent(
+          this.selectedCityFrom
+        )}&to=${encodeURIComponent(this.selectedCityTo)}&date=${encodeURIComponent(
+          this.selectedDate
+        )}`;
+        axios
+          .get(apiUrl)
+          .then((response) => {
             const routesStore = useRoutesStore();
             if (response.data.schedules.length === 0) {
               this.noRoutesDialog = true;
             } else {
               routesStore.setSchedules(response.data.schedules);
               routesStore.setSelectedDepartureDate(this.selectedDate);
-              // console.log("Zapisane trasy w store:", routesStore.schedules);
               this.$router.push('/routes');
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('Błąd podczas wyszukiwania połączeń:', error);
           });
       } else {
@@ -272,7 +167,10 @@ export default defineComponent({
       }
     },
     updateCanSearch() {
-      this.canSearch = this.selectedCityFrom !== null && this.selectedCityTo !== null && this.selectedDate !== '';
+      this.canSearch =
+        this.selectedCityFrom !== null &&
+        this.selectedCityTo !== null &&
+        this.selectedDate !== '';
     },
     checkTransactionStatus() {
       const params = new URLSearchParams(window.location.search);
@@ -289,13 +187,238 @@ export default defineComponent({
         this.transactionModal.isSuccess = false;
       }
     },
+    handleMouseMove(event: MouseEvent) {
+      const btn = event.currentTarget as HTMLElement;
+      const rect = btn.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      btn.style.setProperty('--mouse-x', `${x}%`);
+      btn.style.setProperty('--mouse-y', `${y}%`);
+    },
+    resetMousePosition(event: MouseEvent) {
+      const btn = event.currentTarget as HTMLElement;
+      btn.style.removeProperty('--mouse-x');
+      btn.style.removeProperty('--mouse-y');
+    },
   },
   mounted() {
     this.loadCities();
-    watchEffect(() => {
-      this.updateCanSearch();
-    });
+    this.updateCanSearch();
     this.checkTransactionStatus();
+  },
+  watch: {
+    selectedCityFrom: 'updateCanSearch',
+    selectedCityTo: 'updateCanSearch',
+    selectedDate: 'updateCanSearch',
   },
 });
 </script>
+
+<style scoped>
+.search-form-main-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0;
+  overflow: hidden;
+}
+
+.search-form-card {
+  width: clamp(300px, 80vw, 500px);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  border-radius: 0px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease forwards;
+  border: 2px solid transparent;
+  transition: border 1s linear;
+}
+
+.search-form-card {
+  border-image: linear-gradient(45deg, #ff2770, #6f27ff) 1;
+  animation: borderAnimation 10s linear infinite;
+}
+
+@keyframes borderAnimation {
+  0% {
+    border-image: linear-gradient(45deg, #ff2770, #6f27ff) 1;
+  }
+  50% {
+    border-image: linear-gradient(45deg, #6f27ff, #ff2770) 1;
+  }
+  100% {
+    border-image: linear-gradient(45deg, #ff2770, #6f27ff) 1;
+  }
+}
+
+.search-form-title {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.search-form-title::after {
+  content: '';
+  width: 0;
+  height: 2px;
+  background-color: #ffffff;
+  display: block;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.search-form-title:hover::after {
+  width: 60px;
+}
+
+.search-form-field {
+  margin-bottom: 1.5rem;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: #000;
+}
+
+.multiselect__input,
+.v-text-field input {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.v-label {
+  color: #bbb;
+}
+
+.v-input--is-focused .v-label {
+  color: #ff2770;
+}
+
+.search-form-divider {
+  background-color: #3a3a3a;
+}
+
+.search-form-button {
+  background-color: #ff2770;
+  color: #ffffff;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.search-form-button:hover {
+  transform: translate(
+    calc((var(--mouse-x, 50%) - 50%) / 8),
+    calc((var(--mouse-y, 50%) - 50%) / 8)
+  );
+}
+
+.search-form-button::before,
+.search-form-button::after {
+  content: none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-form-dialog-card {
+  border-radius: 16px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6);
+}
+
+.search-form-dialog-title {
+  font-weight: bold;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  color: #ffffff;
+  text-align: center;
+}
+
+.search-form-success-dialog {
+  border-left: 5px solid #4caf50;
+}
+
+.search-form-error-dialog {
+  border-left: 5px solid #f44336;
+}
+
+@media (max-width: 600px) {
+  .search-form-card {
+    padding: 1.5rem;
+  }
+}
+
+.v-messages {
+  display: none;
+}
+
+.v-input__control {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.v-input--is-focused .v-input__control::after {
+  border-bottom-color: #ff2770;
+}
+
+.v-input__append-inner .v-icon {
+  color: #ff2770;
+}
+
+.v-text-field input {
+  caret-color: #ff2770;
+}
+
+.v-text-field input::selection {
+  background-color: rgba(255, 39, 112, 0.3);
+}
+
+.multiselect__content {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.multiselect__element--highlight {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.multiselect__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.multiselect__content::-webkit-scrollbar-thumb {
+  background-color: #ff2770;
+  border-radius: 3px;
+}
+
+.v-btn {
+  color: #ff2770 !important;
+}
+
+.v-btn:hover {
+  background-color: rgba(255, 39, 112, 0.1);
+}
+
+.v-card-text {
+  color: #ffffff;
+}
+</style>
