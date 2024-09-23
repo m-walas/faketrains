@@ -5,7 +5,7 @@
       <v-row align="center" justify="space-between" class="hidden-sm-and-down">
         <!-- version -->
         <v-col cols="auto">
-          <span class="footer-version-info">v3.0.0</span>
+          <span class="footer-version-info">v3.0.1</span>
         </v-col>
 
         <!-- author info -->
@@ -49,7 +49,7 @@
 
         <!-- version and buttons -->
         <v-col cols="12" class="text-center footer-version-buttons-row">
-          <span class="footer-version-info">v3.0.0</span>
+          <span class="footer-version-info">v3.0.1</span>
           <v-btn
             icon
             href="https://github.com/m-walas/faketrains"
